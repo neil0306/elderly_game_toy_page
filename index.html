@@ -1,934 +1,1411 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中老年平衡感訓練遊戲</title>
+    <title>平衡感调节小游戏</title>
+    <!-- 引入 Tailwind CSS，用于快速构建响应式界面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Inter 字体，提升可读性 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@404&display=swap" rel="stylesheet">
     <style>
-        /* 老年人友好的配色方案 */
-        :root {
-            --primary-color: #2c5282; /* 深藍色 */
-            --secondary-color: #4a90e2; /* 淺藍色 */
-            --accent-color: #f7fafc; /* 淺灰白色 */
-            --text-color: #2d3748; /* 深灰色 */
-            --bg-color: #f8fafc; /* 淺背景色 */
-            --border-color: #e2e8f0; /* 邊框色 */
-            --success-color: #48bb78; /* 成功綠色 */
-            --warning-color: #ed8936; /* 警告橙色 */
-            --error-color: #f56565; /* 錯誤紅色 */
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* 基础样式，针对中老年用户增加字体大小和粗细 */
         body {
-            font-family: 'Microsoft JhengHei', 'PMingLiU', 'SimHei', Arial, sans-serif;
-            font-size: 18px;
-            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 400;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            min-height: 100vh;
+            background-color: #ffe4ef; /* a little pink background */
+            color: #60a5fa; /* LIGHT BLUE 字体 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-
+        /* 标题字体加粗 */
+        h1, h2, h3 {
+            font-weight: 500;
+            font-size: 6.4rem;
+            color: #60a5fa; /* LIGHT BLUE 标题 */
+        }
+        /* 页面内容容器 */
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 2rem;
+            background-color: #ffe4ef; /* a little pink background for container */
         }
-
-        /* 語言切換器 */
-        .language-selector {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .language-selector select {
-            padding: 10px 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background-color: white;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        /* 模態框樣式 */
+        /* 模态框基础样式 */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定定位 */
+            z-index: 1000; /* 叠放顺序在最上层 */
             left: 0;
             top: 0;
+            width: 100%; /* 全宽 */
+            height: 100%; /* 全高 */
+            overflow: auto; /* 允许滚动 */
+            background-color: rgba(0,0,0,0.6); /* 半透明黑色背景 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+        }
+        /* 模态框内容样式 */
+        .modal-content {
+            background-color: #ffe4ef; /* a little pink background for modal */
+            margin: auto;
+            padding: 1.5rem;
+            border-radius: 3rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 90%;
+            width: 1200px;
+            text-align: center;
+            position: relative;
+            color: #60a5fa;
+            font-size: 1.5rem;
+        }
+        /* 页面切换容器样式 */
+        .page {
+            display: none; /* 默认隐藏 */
+        }
+        /* 头部样式 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #ffe4ef; /* a little pink background for header */
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* 按钮样式 */
+        .btn {
+            background-color: #f59e42;
+            color: #60a5fa;
+            padding: 1.5rem 3rem;
+            border-radius: 1.5rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 4rem;
+        }
+        .btn:hover {
+            background-color: #ea580c;
+        }
+        .btn:active {
+            transform: translateY(1px);
+            background-color: #c2410c;
+        }
+        /* 输入框和下拉框样式 */
+        input, select {
+            padding: 1.5rem;
+            border: 1px solid #ccc;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 600px;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            box-sizing: border-box;
+            color: #60a5fa;
+        }
+        label {
+            display: block;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-align: left;
+            font-size: 4rem;
+            color: #60a5fa;
+        }
+        /* 视频容器布局 */
+        .video-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 标准动作视频区域更大，用户视频区域较小 */
+            gap: 2rem;
+            margin-top: 3rem;
+            background-color: #ffe4ef; /* a little pink background for video container */
+            padding: 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #60a5fa;
+            font-size: 4rem;
+        }
+        /* 视频包裹器，用于保持视频宽高比 */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 75%; /* 4:3 宽高比 (高度 / 宽度 * 100) */
+            background-color: #ffe4ef; /* a little pink background for video wrapper */
+            border-radius: 1.5rem;
+            overflow: hidden; /* 隐藏超出部分 */
+        }
+        /* 视频和 Canvas 覆盖样式 */
+        .video-wrapper video, .video-wrapper canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            object-fit: contain; /* 确保视频内容适配容器 */
         }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .modal h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .modal p {
-            font-size: 18px;
-            line-height: 1.8;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--border-color);
-            color: var(--text-color);
-        }
-
-        /* 表單樣式 */
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 18px;
-            color: var(--primary-color);
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background-color: white;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
-
-        /* 遊戲介面樣式 */
-        .game-interface {
-            display: none;
-        }
-
-        .game-controls {
-            background-color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .difficulty-selector {
-            margin-bottom: 20px;
-        }
-
-        .difficulty-selector label {
-            font-weight: bold;
-            font-size: 20px;
-            color: var(--primary-color);
-            margin-right: 15px;
-        }
-
-        .difficulty-selector select {
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background-color: white;
-        }
-
-        /* 視訊區域 */
-        .video-container {
-            position: relative;
-            background-color: #000;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            min-height: 400px;
-        }
-
-        .standard-video {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 40%;
-            height: 40%;
-            border: 3px solid var(--secondary-color);
-            border-radius: 10px;
-            z-index: 10;
-            object-fit: cover;
-            /* 防止 Safari 自动全屏播放 */
-            -webkit-playsinline: true;
-            /* 确保视频不会超出容器 */
-            max-width: 300px;
-            max-height: 200px;
-        }
-
-        .user-video {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-        }
-
+        /* 倒计时文本样式 */
         .countdown {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 120px;
+            font-size: 24rem;
+            color: #60a5fa;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
             font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            z-index: 20;
         }
-
-        /* 分數顯示 */
-        .score-display {
-            background-color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .score-display h3 {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .score-value {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--success-color);
-        }
-
-        /* 遊戲控制按鈕 */
-        .game-control-btn {
-            width: 100%;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .game-control-btn:hover {
-            background-color: #38a169;
-            transform: translateY(-2px);
-        }
-
-        .game-control-btn:disabled {
-            background-color: #a0aec0;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* 響應式設計 */
+        /* 移动端响应式调整 */
         @media (max-width: 768px) {
             body {
-                font-size: 16px;
+                font-size: 3rem;
             }
-            
-            .container {
-                padding: 10px;
+            h1, h2, h3 {
+                font-size: 4rem;
             }
-            
-            .standard-video {
-                width: 50%;
-                height: 35%;
-                max-width: 200px;
-                max-height: 150px;
+            .btn, input, select, label {
+                font-size: 3rem;
             }
-            
-            .modal-content {
-                margin: 5% auto;
-                padding: 20px;
+            .countdown {
+                font-size: 12rem;
             }
         }
-
-        /* 隱藏類 */
-        .hidden {
-            display: none !important;
+        
+        /* Apple 风格 Tab 导航样式 */
+        .tab-navigation {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 2rem;
+            padding: 1rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
-
-        /* 載入動畫 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: 3rem;
+            font-weight: 500;
+            color: #60a5fa;
+            cursor: pointer;
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab-btn:hover {
+            background-color: rgba(96, 165, 250, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background-color: #60a5fa;
+            color: white;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+        
+        /* Tab 内容区域样式 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 位置输入区域样式 */
+        .location-input {
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .location-input input {
+            margin-bottom: 0;
+        }
+        
+        /* 推荐卡片样式 */
+        .recommendation-card {
+            background: linear-gradient(135deg, #ffe4ef 0%, #f0f9ff 100%);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #60a5fa;
+        }
+        
+        .recommendation-card h4 {
+            color: #60a5fa;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendation-card p {
+            color: #6b7280;
+            font-size: 2.2rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendation-card .rating {
+            color: #f59e42;
+            font-weight: bold;
+            font-size: 2.4rem;
+        }
+        
+        .recommendation-card .address {
+            color: #9ca3af;
+            font-size: 2rem;
+            font-style: italic;
+        }
+        
+        /* 保健品分类按钮样式 */
+        .category-btn {
+            background-color: #f3f4f6;
+            color: #60a5fa;
+            padding: 1.2rem 2.4rem;
+            border-radius: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            font-size: 2.4rem;
+        }
+        
+        .category-btn:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .category-btn.active {
+            background-color: #60a5fa;
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .tab-container {
+                gap: 1rem;
+            }
+            
+            .tab-btn {
+                font-size: 2.4rem;
+                padding: 1.2rem 2rem;
+            }
+            
+            .location-input {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .recommendation-card h4 {
+                font-size: 2.4rem;
+            }
+            
+            .recommendation-card p {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 語言選擇器 -->
-    <div class="language-selector">
-        <select id="languageSelect" onchange="changeLanguage()">
-            <option value="zh">中文</option>
-            <option value="en">English</option>
-        </select>
+
+    <!-- 网页头部区域 -->
+    <div class="header">
+        <h1 class="text-2xl font-bold text-indigo-700" id="appTitle">平衡感调节小游戏</h1>
+        <div class="language-selector">
+            <label for="languageSelect" class="sr-only">选择语言</label>
+            <select id="languageSelect" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="zh-CN">简体中文</option>
+                <option value="en-US">English</option>
+            </select>
+        </div>
     </div>
 
-    <!-- 免責聲明模態框 -->
-    <div id="disclaimerModal" class="modal">
+    <!-- 用户信息输入页面 (点击免责声明确认后显示) -->
+    <div id="userInfoPage" class="page container py-8">
+        <h2 class="text-3xl font-bold mb-8 text-center text-indigo-700" id="userInfoTitle">请输入您的信息</h2>
+        <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <div class="mb-4">
+                <label for="ageInput" id="labelAge">年龄：</label>
+                <input type="number" id="ageInput" placeholder="请输入您的年龄" class="w-full">
+            </div>
+            <div class="mb-4">
+                <label for="genderSelect" id="labelGender">性别：</label>
+                <select id="genderSelect" class="w-full">
+                    <option value="" disabled selected id="genderPlaceholder">请选择性别</option>
+                    <option value="male" id="genderMale">男</option>
+                    <option value="female" id="genderFemale">女</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="weightInput" id="labelWeight">体重 (kg):</label>
+                <input type="number" id="weightInput" placeholder="请输入您的体重 (kg)" step="0.1" class="w-full">
+            </div>
+            <div class="mb-6">
+                <label for="heightInput" id="labelHeight">身高 (m):</label>
+                <input type="number" id="heightInput" placeholder="请输入您的身高 (m)" step="0.01" class="w-full">
+            </div>
+            <button id="submitUserInfoBtn" class="btn w-full text-xl">提交</button>
+        </div>
+    </div>
+
+    <!-- 游戏主页面 (输入用户信息后显示) -->
+    <div id="gamePage" class="page container py-8">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-700" id="gamePageTitle">平衡感调节游戏</h2>
+
+        <!-- 添加 Apple 风格的 Tab 导航 -->
+        <div class="tab-navigation">
+            <div class="tab-container">
+                <button class="tab-btn active" data-tab="game" id="gameTab">游戏</button>
+                <button class="tab-btn" data-tab="restaurant" id="restaurantTab">餐厅推荐</button>
+                <button class="tab-btn" data-tab="gym" id="gymTab">健身房推荐</button>
+                <button class="tab-btn" data-tab="supplement" id="supplementTab">保健品推荐</button>
+            </div>
+        </div>
+
+        <!-- 游戏内容区域 -->
+        <div id="gameContent" class="tab-content active">
+            <div class="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 mb-6 bg-white p-6 rounded-xl shadow-lg">
+                <div class="w-full md:w-1/3">
+                    <label for="difficultySelect" class="block mb-2 font-bold" id="labelDifficulty">选择游戏难度：</label>
+                    <select id="difficultySelect" class="p-3 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="high" id="difficultyHigh">高</option>
+                        <option value="mid" id="difficultyMid">中</option>
+                        <option value="easy" id="difficultyEasy">低</option>
+                    </select>
+                </div>
+                <div class="w-full md:w-2/3 text-center md:text-right">
+                    <p class="text-2xl font-bold mb-2" id="currentScoreLabel">当前平均得分：</p>
+                    <p id="averageScoreDisplay" class="text-4xl font-extrabold text-green-600">0</p>
+                </div>
+            </div>
+
+            <div class="video-container">
+                <!-- 标准动作视频区域 -->
+                <div class="video-wrapper relative">
+                    <h3 class="absolute top-2 left-2 z-10 text-white text-lg font-bold bg-black bg-opacity-50 px-2 py-1 rounded" id="standardVideoLabel">标准动作</h3>
+                    <video id="standardVideo" autoplay loop muted playsinline></video>
+                    <canvas id="standardCanvas" class="absolute top-0 left-0"></canvas>
+                </div>
+                <!-- 用户实时视频及姿态分析区域 -->
+                <div class="video-wrapper relative">
+                    <h3 class="absolute top-2 left-2 z-10 text-white text-lg font-bold bg-black bg-opacity-50 px-2 py-1 rounded" id="userVideoLabel">您的实时动作</h3>
+                    <video id="userVideo" autoplay playsinline></video>
+                    <canvas id="userCanvas" class="absolute top-0 left-0"></canvas>
+                    <div id="countdownDisplay" class="countdown hidden">3</div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="startGameBtn" class="btn text-2xl px-8 py-4">开始游戏</button>
+            </div>
+        </div>
+
+        <!-- 餐厅推荐内容区域 -->
+        <div id="restaurantContent" class="tab-content">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-6 text-center" id="restaurantTitle">健康餐厅推荐</h3>
+                <div class="location-input mb-6">
+                    <label for="locationInput" class="block mb-2 font-bold" id="locationLabel">您的位置：</label>
+                    <input type="text" id="locationInput" placeholder="请输入您所在的城市" class="w-full max-w-md">
+                    <button id="getLocationBtn" class="btn ml-4">获取推荐</button>
+                </div>
+                <div id="restaurantList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 餐厅推荐将在这里显示 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 健身房推荐内容区域 -->
+        <div id="gymContent" class="tab-content">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-6 text-center" id="gymTitle">适老健身房推荐</h3>
+                <div class="location-input mb-6">
+                    <label for="gymLocationInput" class="block mb-2 font-bold" id="gymLocationLabel">您的位置：</label>
+                    <input type="text" id="gymLocationInput" placeholder="请输入您所在的城市" class="w-full max-w-md">
+                    <button id="getGymBtn" class="btn ml-4">获取推荐</button>
+                </div>
+                <div id="gymList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 健身房推荐将在这里显示 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 保健品推荐内容区域 -->
+        <div id="supplementContent" class="tab-content">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-6 text-center" id="supplementTitle">保健品推荐</h3>
+                <div class="supplement-categories mb-6">
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button class="category-btn active" data-category="cardiovascular" id="cardiovascularBtn">心血管健康</button>
+                        <button class="category-btn" data-category="protein" id="proteinBtn">蛋白质补充</button>
+                        <button class="category-btn" data-category="joint" id="jointBtn">关节健康</button>
+                        <button class="category-btn" data-category="immunity" id="immunityBtn">免疫力提升</button>
+                    </div>
+                </div>
+                <div id="supplementList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 保健品推荐将在这里显示 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏结束模态框 -->
+    <div id="gameOverModal" class="modal flex">
         <div class="modal-content">
-            <h2 data-translate="disclaimer_title">免責聲明</h2>
-            <p data-translate="disclaimer_text">
-                本網站的內容不構成專業的醫療建議，請根據自己的身體狀況選擇適當的活動，本網站提出的建議僅作為參考並且不構成任何醫療建議，如果感到身體不適，請及時就醫。本網站不會收集您的個人數據也不會保存任何視頻，您在本網站中輸入的任何信息都只是為了推薦更加適合您的小遊戲而使用，它們不會被上傳到我們的伺服器。
+            <h2 class="text-3xl font-extrabold mb-6 text-indigo-700" id="gameOverTitle">游戏结束！</h2>
+            <p class="text-2xl mb-4" id="finalScoreText">您的最终得分：</p>
+            <p id="finalScoreDisplay" class="text-5xl font-extrabold text-purple-600 mb-6">0</p>
+            <h3 class="text-xl font-bold mb-3" id="adviceTitle">营养补充建议：</h3>
+            <p id="nutritionAdvice" class="mb-6 leading-relaxed">根据您的表现，建议...</p>
+            <button id="restartGameBtn" class="btn text-xl">重新开始</button>
+        </div>
+    </div>
+
+    <!-- 免责声明模态框 (默认显示) -->
+    <div id="disclaimerModal" class="modal flex">
+        <div class="modal-content">
+            <h2 class="text-3xl font-extrabold mb-6 text-red-600" id="disclaimerTitle">免责声明</h2>
+            <p class="mb-6 leading-relaxed" id="disclaimerText">
+                本网站的内容不构成专业的医疗建议，请根据自己的身体状况选择适当的活动。
+                本网站提出的建议仅作为参考并且不构成任何医疗建议。
+                如果感到身体不适，请及时就医。
+                本网站不会收集您的个人数据也不会保存任何视频。
+                您在本网站中输入的任何信息都只是为了推荐更加适合您的小游戏而使用，它们不会被上传到我们的服务器。
             </p>
-            <button class="btn btn-primary" onclick="acceptDisclaimer()" data-translate="accept">我同意</button>
-            <button class="btn btn-secondary" onclick="declineDisclaimer()" data-translate="decline">不同意</button>
+            <button id="confirmDisclaimerBtn" class="btn text-xl">我已阅读并同意</button>
         </div>
     </div>
 
-    <!-- 用戶信息輸入模態框 -->
-    <div id="userInfoModal" class="modal">
-        <div class="modal-content">
-            <h2 data-translate="user_info_title">請輸入您的基本信息</h2>
-            <form id="userInfoForm">
-                <div class="form-group">
-                    <label for="age" data-translate="age_label">年齡：</label>
-                    <input type="number" id="age" name="age" min="1" max="120" required>
-                </div>
-                <div class="form-group">
-                    <label for="gender" data-translate="gender_label">性別：</label>
-                    <select id="gender" name="gender" required>
-                        <option value="" data-translate="select_gender">請選擇</option>
-                        <option value="male" data-translate="male">男</option>
-                        <option value="female" data-translate="female">女</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="height" data-translate="height_label">身高（公分）：</label>
-                    <input type="number" id="height" name="height" min="100" max="250" required>
-                </div>
-                <div class="form-group">
-                    <label for="weight" data-translate="weight_label">體重（公斤）：</label>
-                    <input type="number" id="weight" name="weight" min="30" max="200" required>
-                </div>
-                <button type="submit" class="btn btn-primary" data-translate="start_game">開始遊戲</button>
-            </form>
-        </div>
-    </div>
+    <script type="module">
+        // 导入 MediaPipe PoseLandmarker、FilesetResolver 和 DrawingUtils 模块
+        import { PoseLandmarker, FilesetResolver, DrawingUtils } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
 
-    <!-- 遊戲結果模態框 -->
-    <div id="gameResultModal" class="modal">
-        <div class="modal-content">
-            <h2 data-translate="game_result_title">遊戲結果</h2>
-            <div class="score-display">
-                <h3 data-translate="final_score">最終得分</h3>
-                <div class="score-value" id="finalScore">0</div>
-            </div>
-            <div id="nutritionAdvice">
-                <h3 data-translate="nutrition_advice_title">營養建議</h3>
-                <p id="nutritionAdviceText"></p>
-            </div>
-            <button class="btn btn-primary" onclick="restartGame()" data-translate="play_again">再玩一次</button>
-        </div>
-    </div>
-
-    <!-- 主遊戲介面 -->
-    <div class="container">
-        <div class="game-interface" id="gameInterface">
-            <h1 data-translate="game_title">中老年平衡感訓練遊戲</h1>
-            
-            <!-- 遊戲控制區域 -->
-            <div class="game-controls">
-                <div class="difficulty-selector">
-                    <label for="difficultySelect" data-translate="difficulty_label">遊戲難度：</label>
-                    <select id="difficultySelect" onchange="changeDifficulty()">
-                        <option value="easy" data-translate="easy">簡單</option>
-                        <option value="medium" data-translate="medium">中等</option>
-                        <option value="hard" data-translate="hard">困難</option>
-                    </select>
-                </div>
-                
-                <!-- 分數顯示 -->
-                <div class="score-display">
-                    <h3 data-translate="current_score">當前平均得分</h3>
-                    <div class="score-value" id="currentScore">0</div>
-                </div>
-            </div>
-
-            <!-- 視訊顯示區域 -->
-            <div class="video-container" id="videoContainer">
-                <video id="standardVideo" class="standard-video" muted loop playsinline webkit-playsinline x5-playsinline style="display: none;">
-                    <source src="easy.mp4" type="video/mp4">
-                </video>
-                <video id="userVideo" class="user-video" autoplay muted playsinline></video>
-                <canvas id="userCanvas" class="user-video" style="display: none;"></canvas>
-                <div id="countdown" class="countdown" style="display: none;"></div>
-            </div>
-
-            <!-- 遊戲控制按鈕 -->
-            <button id="gameControlBtn" class="game-control-btn" onclick="toggleGame()" data-translate="start_game">開始遊戲</button>
-        </div>
-    </div>
-
-    <!-- MediaPipe 和其他腳本 -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-
-    <script>
-        // 多語言支持
+        // 多语言翻译字典
         const translations = {
-            zh: {
-                disclaimer_title: "免責聲明",
-                disclaimer_text: "本網站的內容不構成專業的醫療建議，請根據自己的身體狀況選擇適當的活動，本網站提出的建議僅作為參考並且不構成任何醫療建議，如果感到身體不適，請及時就醫。本網站不會收集您的個人數據也不會保存任何視頻，您在本網站中輸入的任何信息都只是為了推薦更加適合您的小遊戲而使用，它們不會被上傳到我們的伺服器。",
-                accept: "我同意",
-                decline: "不同意",
-                user_info_title: "請輸入您的基本信息",
-                age_label: "年齡：",
-                gender_label: "性別：",
-                select_gender: "請選擇",
-                male: "男",
-                female: "女",
-                height_label: "身高（公分）：",
-                weight_label: "體重（公斤）：",
-                start_game: "開始遊戲",
-                game_title: "中老年平衡感訓練遊戲",
-                difficulty_label: "遊戲難度：",
-                easy: "簡單",
-                medium: "中等",
-                hard: "困難",
-                current_score: "當前平均得分",
-                game_result_title: "遊戲結果",
-                final_score: "最終得分",
-                nutrition_advice_title: "營養建議",
-                play_again: "再玩一次",
-                stop_game: "結束遊戲"
+            'zh-CN': {
+                appTitle: '平衡感调节小游戏',
+                disclaimerTitle: '免责声明',
+                disclaimerText: '本网站的内容不构成专业的医疗建议，请根据自己的身体状况选择适当的活动。本网站提出的建议仅作为参考并且不构成任何医疗建议。如果感到身体不适，请及时就医。本网站不会收集您的个人数据也不会保存任何视频。您在本网站中输入的任何信息都只是为了推荐更加适合您的小游戏而使用，它们不会被上传到我们的服务器。',
+                confirmDisclaimerBtn: '我已阅读并同意',
+                userInfoTitle: '请输入您的信息',
+                labelAge: '年龄：',
+                ageInputPlaceholder: '请输入您的年龄',
+                labelGender: '性别：',
+                genderPlaceholder: '请选择性别',
+                genderMale: '男',
+                genderFemale: '女',
+                labelWeight: '体重 (kg):',
+                weightInputPlaceholder: '请输入您的体重 (kg)',
+                labelHeight: '身高 (m):',
+                heightInputPlaceholder: '请输入您的身高 (m)',
+                submitUserInfoBtn: '提交',
+                gamePageTitle: '平衡感调节游戏',
+                // Tab 标签
+                gameTab: '游戏',
+                restaurantTab: '餐厅推荐',
+                gymTab: '健身房推荐',
+                supplementTab: '保健品推荐',
+                // 游戏相关
+                labelDifficulty: '选择游戏难度：',
+                difficultyHigh: '高',
+                difficultyMid: '中',
+                difficultyEasy: '低',
+                currentScoreLabel: '当前平均得分：',
+                standardVideoLabel: '标准动作',
+                userVideoLabel: '您的实时动作',
+                startGameBtn: '开始游戏',
+                endGameBtn: '结束游戏',
+                // 餐厅推荐
+                restaurantTitle: '健康餐厅推荐',
+                locationLabel: '您的位置：',
+                locationPlaceholder: '请输入您所在的城市',
+                getLocationBtn: '获取推荐',
+                // 健身房推荐
+                gymTitle: '适老健身房推荐',
+                gymLocationLabel: '您的位置：',
+                gymLocationPlaceholder: '请输入您所在的城市',
+                getGymBtn: '获取推荐',
+                // 保健品推荐
+                supplementTitle: '保健品推荐',
+                cardiovascularBtn: '心血管健康',
+                proteinBtn: '蛋白质补充',
+                jointBtn: '关节健康',
+                immunityBtn: '免疫力提升',
+                // 游戏结束
+                gameOverTitle: '游戏结束！',
+                finalScoreText: '您的最终得分：',
+                adviceTitle: '营养补充建议：',
+                nutritionAdviceLow: '您的表現還有提升空間。建議多補充蛋白質和鈣質，例如牛奶、豆腐、魚肉，以增強肌肉和骨骼健康。同時，可以嘗試低強度的平衡練習。',
+                nutritionAdviceLowSupplements: [
+                    '維特健靈 - 活關素特強特效膠囊（90 粒）',
+                    'Move Free 益節 氨糖軟骨素',
+                    'Swisse 關節健康片',
+                    'Blackmores 關節靈',
+                    '健力多 氨糖軟骨素鈣片',
+                    'Kirkland Glucosamine HCl with MSM',
+                    'Nature Made TripleFlex',
+                    'Schiff Glucosamine Plus MSM',
+                    'Puritan's Pride Glucosamine Chondroitin MSM',
+                    '健安喜 (GNC) 關節健康配方'
+                ],
+                nutritionAdviceMid: '您的關節需要更多呵護，建議補充關節靈活相關保健品，並適度運動。',
+                nutritionAdviceMidSupplements: [
+                    '川御一 關節の御守',
+                    'Sato 佐藤製藥 關節守護',
+                    'ORIHIRO 葡萄糖胺',
+                    '日本小林製藥 關節靈',
+                    '善存 關節健康配方',
+                    '森下仁丹 關節靈',
+                    'DHC 關節靈活片',
+                    '永信 關節寶',
+                    '台塑生醫 關健素',
+                    '白蘭氏 關鍵活力膠囊'
+                ],
+                nutritionAdviceHigh: '您的表現非常出色！請繼續保持良好的運動習慣和均衡的飲食。',
+                nutritionAdviceHighSupplements: [
+                    '醫之選 - 液關健',
+                    '安美露 關節舒緩液',
+                    '葡萄王 關健寶',
+                    '康健生技 關健飲',
+                    '台塑生醫 關健飲',
+                    '善存 關鍵活力飲',
+                    '白蘭氏 關鍵飲',
+                    'Swisse 關節健康飲',
+                    'Move Free 關節飲',
+                    'GNC 關節健康飲'
+                ],
+                restartGameBtn: '重新开始',
+                cameraAccessError: '无法访问摄像头，请检查权限设置。',
+                invalidInputError: '请填写有效的年龄、体重和身高！'
             },
-            en: {
-                disclaimer_title: "Disclaimer",
-                disclaimer_text: "The content of this website does not constitute professional medical advice. Please choose appropriate activities based on your physical condition. The suggestions provided by this website are for reference only and do not constitute any medical advice. If you feel unwell, please seek medical attention promptly. This website will not collect your personal data or save any videos. Any information you enter on this website is only used to recommend games more suitable for you and will not be uploaded to our servers.",
-                accept: "I Agree",
-                decline: "Decline",
-                user_info_title: "Please Enter Your Basic Information",
-                age_label: "Age:",
-                gender_label: "Gender:",
-                select_gender: "Please Select",
-                male: "Male",
-                female: "Female",
-                height_label: "Height (cm):",
-                weight_label: "Weight (kg):",
-                start_game: "Start Game",
-                game_title: "Balance Training Game for Seniors",
-                difficulty_label: "Game Difficulty:",
-                easy: "Easy",
-                medium: "Medium",
-                hard: "Hard",
-                current_score: "Current Average Score",
-                game_result_title: "Game Result",
-                final_score: "Final Score",
-                nutrition_advice_title: "Nutrition Advice",
-                play_again: "Play Again",
-                stop_game: "Stop Game"
+            'en-US': {
+                appTitle: 'Balance Training Mini-Games',
+                disclaimerTitle: 'Disclaimer',
+                disclaimerText: 'The content of this website does not constitute professional medical advice. Please choose appropriate activities based on your physical condition. The suggestions provided by this website are for reference only and do not constitute any medical advice. If you feel unwell, please seek medical attention promptly. This website does not collect your personal data or save any videos. Any information you enter on this website is solely for the purpose of recommending more suitable mini-games for you, and it will not be uploaded to our servers.',
+                confirmDisclaimerBtn: 'I have read and agree',
+                userInfoTitle: 'Please Enter Your Information',
+                labelAge: 'Age:',
+                ageInputPlaceholder: 'Enter your age',
+                labelGender: 'Gender:',
+                genderPlaceholder: 'Select Gender',
+                genderMale: 'Male',
+                genderFemale: 'Female',
+                labelWeight: 'Weight (kg):',
+                weightInputPlaceholder: 'Enter your weight (kg)',
+                labelHeight: 'Height (m):',
+                heightInputPlaceholder: 'Enter your height (m)',
+                submitUserInfoBtn: 'Submit',
+                gamePageTitle: 'Balance Training Game',
+                // Tab labels
+                gameTab: 'Game',
+                restaurantTab: 'Restaurant Recommendations',
+                gymTab: 'Gym Recommendations',
+                supplementTab: 'Supplement Recommendations',
+                // Game related
+                labelDifficulty: 'Select Game Difficulty:',
+                difficultyHigh: 'High',
+                difficultyMid: 'Mid',
+                difficultyEasy: 'Low',
+                currentScoreLabel: 'Current Average Score:',
+                standardVideoLabel: 'Standard Movement',
+                userVideoLabel: 'Your Live Movement',
+                startGameBtn: 'Start Game',
+                endGameBtn: 'End Game',
+                // Restaurant recommendations
+                restaurantTitle: 'Healthy Restaurant Recommendations',
+                locationLabel: 'Your Location:',
+                locationPlaceholder: 'Enter your city',
+                getLocationBtn: 'Get Recommendations',
+                // Gym recommendations
+                gymTitle: 'Senior-Friendly Gym Recommendations',
+                gymLocationLabel: 'Your Location:',
+                gymLocationPlaceholder: 'Enter your city',
+                getGymBtn: 'Get Recommendations',
+                // Supplement recommendations
+                supplementTitle: 'Health Supplement Recommendations',
+                cardiovascularBtn: 'Cardiovascular Health',
+                proteinBtn: 'Protein Supplement',
+                jointBtn: 'Joint Health',
+                immunityBtn: 'Immunity Boost',
+                // Game over
+                gameOverTitle: 'Game Over!',
+                finalScoreText: 'Your Final Score:',
+                adviceTitle: 'Nutritional Advice:',
+                nutritionAdviceLow: 'Your performance has room for improvement. It is recommended to supplement protein and calcium, such as milk, tofu, and fish, to strengthen muscle and bone health. You can also try low-intensity balance exercises.',
+                nutritionAdviceLowSupplements: [
+                    'Vita Green VitaJoint Extra Strength Capsules (90 capsules)',
+                    'Move Free Joint Health',
+                    'Swisse Joint Health Tablets',
+                    'Blackmores Joint Formula',
+                    'Caltrate Joint Health',
+                    'Kirkland Glucosamine HCl with MSM',
+                    'Nature Made TripleFlex',
+                    'Schiff Glucosamine Plus MSM',
+                    'Puritan's Pride Glucosamine Chondroitin MSM',
+                    'GNC Joint Health Formula'
+                ],
+                nutritionAdviceMid: 'Your joints need more care. Consider joint flexibility supplements and moderate exercise.',
+                nutritionAdviceMidSupplements: [
+                    'Kawaguchi Joint Guardian',
+                    'Sato Joint Support',
+                    'ORIHIRO Glucosamine',
+                    'Kobayashi Joint Formula',
+                    'Centrum Joint Health',
+                    'Morishita Jintan Joint',
+                    'DHC Joint Tablets',
+                    'Yung Shin Joint Care',
+                    'Formosa Biomedical Joint Formula',
+                    'Brand's Joint Vitality Capsules'
+                ],
+                nutritionAdviceHigh: 'Excellent performance! Please continue to maintain good exercise habits and a balanced diet.',
+                nutritionAdviceHighSupplements: [
+                    'EZZ Liquid Joint',
+                    'Amrutanjan Joint Relief Liquid',
+                    'Grape King Joint Care',
+                    'Health Bio Joint Drink',
+                    'Formosa Biomedical Joint Drink',
+                    'Centrum Joint Vitality Drink',
+                    'Brand's Joint Drink',
+                    'Swisse Joint Health Drink',
+                    'Move Free Joint Drink',
+                    'GNC Joint Health Drink'
+                ],
+                restartGameBtn: 'Restart Game',
+                cameraAccessError: 'Unable to access camera, please check permissions.',
+                invalidInputError: 'Please enter valid age, weight, and height!'
             }
         };
 
-        // 全域變數
-        let currentLanguage = 'zh';
-        let userInfo = {};
-        let gameState = 'stopped'; // 'stopped', 'countdown', 'playing'
-        let pose = null;
-        let camera = null;
-        let standardPoseData = [];
-        let userPoseData = [];
-        let gameStartTime = null;
-        let totalScore = 0;
-        let frameCount = 0;
-        let gameInterval = null;
+        let currentLanguage = 'zh-CN'; // 默认语言为中文
 
-        // 頁面加載完成後顯示免責聲明
-        window.addEventListener('load', function() {
-            document.getElementById('disclaimerModal').style.display = 'block';
-        });
-
-        // 語言切換功能
-        function changeLanguage() {
-            const select = document.getElementById('languageSelect');
-            currentLanguage = select.value;
-            updateLanguage();
-        }
-
+        // 根据当前语言更新所有文本内容
         function updateLanguage() {
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[currentLanguage][key]) {
-                    element.textContent = translations[currentLanguage][key];
-                }
-            });
-        }
+            // 更新通用文本
+            document.getElementById('appTitle').textContent = translations[currentLanguage].appTitle;
+            // 更新免责声明模态框文本
+            document.getElementById('disclaimerTitle').textContent = translations[currentLanguage].disclaimerTitle;
+            document.getElementById('disclaimerText').textContent = translations[currentLanguage].disclaimerText;
+            document.getElementById('confirmDisclaimerBtn').textContent = translations[currentLanguage].confirmDisclaimerBtn;
 
-        // 免責聲明處理
-        function acceptDisclaimer() {
-            document.getElementById('disclaimerModal').style.display = 'none';
-            document.getElementById('userInfoModal').style.display = 'block';
-        }
+            // 更新用户信息页面文本
+            document.getElementById('userInfoTitle').textContent = translations[currentLanguage].userInfoTitle;
+            document.getElementById('labelAge').textContent = translations[currentLanguage].labelAge;
+            document.getElementById('ageInput').placeholder = translations[currentLanguage].ageInputPlaceholder;
+            document.getElementById('labelGender').textContent = translations[currentLanguage].labelGender;
+            document.getElementById('genderPlaceholder').textContent = translations[currentLanguage].genderPlaceholder;
+            document.getElementById('genderMale').textContent = translations[currentLanguage].genderMale;
+            document.getElementById('genderFemale').textContent = translations[currentLanguage].genderFemale;
+            document.getElementById('labelWeight').textContent = translations[currentLanguage].labelWeight;
+            document.getElementById('weightInput').placeholder = translations[currentLanguage].weightInputPlaceholder;
+            document.getElementById('labelHeight').textContent = translations[currentLanguage].labelHeight;
+            document.getElementById('heightInput').placeholder = translations[currentLanguage].heightInputPlaceholder;
+            document.getElementById('submitUserInfoBtn').textContent = translations[currentLanguage].submitUserInfoBtn;
 
-        function declineDisclaimer() {
-            alert(currentLanguage === 'zh' ? '感謝您的訪問！' : 'Thank you for visiting!');
-            window.close();
-        }
-
-        // 用戶信息表單處理
-        document.getElementById('userInfoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            // 更新游戏页面文本
+            document.getElementById('gamePageTitle').textContent = translations[currentLanguage].gamePageTitle;
             
-            const formData = new FormData(e.target);
-            userInfo = {
-                age: parseInt(formData.get('age')),
-                gender: formData.get('gender'),
-                height: parseInt(formData.get('height')),
-                weight: parseInt(formData.get('weight'))
-            };
-
-            // 計算 BMI 並設置默認難度
-            const bmi = userInfo.weight / ((userInfo.height / 100) ** 2);
-            let defaultDifficulty = 'medium';
+            // 更新 Tab 标签
+            document.getElementById('gameTab').textContent = translations[currentLanguage].gameTab;
+            document.getElementById('restaurantTab').textContent = translations[currentLanguage].restaurantTab;
+            document.getElementById('gymTab').textContent = translations[currentLanguage].gymTab;
+            document.getElementById('supplementTab').textContent = translations[currentLanguage].supplementTab;
             
-            if (userInfo.age > 70 || bmi > 30) {
-                defaultDifficulty = 'easy';
-            } else if (bmi < 18.5 || (bmi >= 18.5 && bmi <= 24.9)) {
-                defaultDifficulty = 'hard';
+            // 更新游戏相关文本
+            document.getElementById('labelDifficulty').textContent = translations[currentLanguage].labelDifficulty;
+            document.getElementById('difficultyHigh').textContent = translations[currentLanguage].difficultyHigh;
+            document.getElementById('difficultyMid').textContent = translations[currentLanguage].difficultyMid;
+            document.getElementById('difficultyEasy').textContent = translations[currentLanguage].difficultyEasy;
+            document.getElementById('currentScoreLabel').textContent = translations[currentLanguage].currentScoreLabel;
+            document.getElementById('standardVideoLabel').textContent = translations[currentLanguage].standardVideoLabel;
+            document.getElementById('userVideoLabel').textContent = translations[currentLanguage].userVideoLabel;
+            document.getElementById('startGameBtn').textContent = translations[currentLanguage].startGameBtn;
+
+            // 更新餐厅推荐文本
+            document.getElementById('restaurantTitle').textContent = translations[currentLanguage].restaurantTitle;
+            document.getElementById('locationLabel').textContent = translations[currentLanguage].locationLabel;
+            document.getElementById('locationInput').placeholder = translations[currentLanguage].locationPlaceholder;
+            document.getElementById('getLocationBtn').textContent = translations[currentLanguage].getLocationBtn;
+            
+            // 更新健身房推荐文本
+            document.getElementById('gymTitle').textContent = translations[currentLanguage].gymTitle;
+            document.getElementById('gymLocationLabel').textContent = translations[currentLanguage].gymLocationLabel;
+            document.getElementById('gymLocationInput').placeholder = translations[currentLanguage].gymLocationPlaceholder;
+            document.getElementById('getGymBtn').textContent = translations[currentLanguage].getGymBtn;
+            
+            // 更新保健品推荐文本
+            document.getElementById('supplementTitle').textContent = translations[currentLanguage].supplementTitle;
+            document.getElementById('cardiovascularBtn').textContent = translations[currentLanguage].cardiovascularBtn;
+            document.getElementById('proteinBtn').textContent = translations[currentLanguage].proteinBtn;
+            document.getElementById('jointBtn').textContent = translations[currentLanguage].jointBtn;
+            document.getElementById('immunityBtn').textContent = translations[currentLanguage].immunityBtn;
+
+            // 更新游戏结束模态框文本
+            document.getElementById('gameOverTitle').textContent = translations[currentLanguage].gameOverTitle;
+            document.getElementById('finalScoreText').textContent = translations[currentLanguage].finalScoreText;
+            document.getElementById('adviceTitle').textContent = translations[currentLanguage].adviceTitle;
+            document.getElementById('nutritionAdvice').textContent = translations[currentLanguage].nutritionAdviceLow; // 初始设置为低档建议，后续会更新
+            document.getElementById('restartGameBtn').textContent = translations[currentLanguage].restartGameBtn;
+
+            // 根据游戏状态更新开始/结束按钮文本
+            if (isGameRunning) {
+                document.getElementById('startGameBtn').textContent = translations[currentLanguage].endGameBtn;
+            } else {
+                document.getElementById('startGameBtn').textContent = translations[currentLanguage].startGameBtn;
             }
+        }
 
-            document.getElementById('difficultySelect').value = defaultDifficulty;
-            document.getElementById('userInfoModal').style.display = 'none';
-            document.getElementById('gameInterface').style.display = 'block';
-            
-            // 初始化遊戲
-            initializeGame();
+        // 语言切换下拉框事件监听
+        document.getElementById('languageSelect').addEventListener('change', (event) => {
+            currentLanguage = event.target.value;
+            updateLanguage();
         });
 
-        // 遊戲初始化
-        async function initializeGame() {
-            try {
-                // 初始化MediaPipe Pose
-                pose = new Pose({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-                    }
-                });
+        // --- 页面导航逻辑 ---
+        const disclaimerModal = document.getElementById('disclaimerModal');
+        const userInfoPage = document.getElementById('userInfoPage');
+        const gamePage = document.getElementById('gamePage');
+        const gameOverModal = document.getElementById('gameOverModal');
 
-                pose.setOptions({
-                    modelComplexity: 1,
-                    smoothLandmarks: true,
-                    enableSegmentation: false,
-                    smoothSegmentation: false,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5
-                });
-
-                pose.onResults(onPoseResults);
-
-                // 初始化攝影機
-                const videoElement = document.getElementById('userVideo');
-                camera = new Camera(videoElement, {
-                    onFrame: async () => {
-                        if (gameState === 'playing') {
-                            await pose.send({image: videoElement});
-                        }
-                    },
-                    width: 640,
-                    height: 480
-                });
-
-                await camera.start();
-                
-                // 設置標準視頻
-                changeDifficulty();
-                
-            } catch (error) {
-                console.error('遊戲初始化失敗：', error);
-                alert(currentLanguage === 'zh' ? '遊戲初始化失敗，請檢查攝影機權限' : 'Game initialization failed, please check camera permissions');
-            }
-        }
-
-        // 難度切換
-        function changeDifficulty() {
-            const difficulty = document.getElementById('difficultySelect').value;
-            const standardVideo = document.getElementById('standardVideo');
-            standardVideo.src = `${difficulty}.mp4`;
-        }
-
-        // 姿態檢測結果處理
-        function onPoseResults(results) {
-            if (!results.poseLandmarks || gameState !== 'playing') return;
-
-            const canvas = document.getElementById('userCanvas');
-            const canvasCtx = canvas.getContext('2d');
-            const videoElement = document.getElementById('userVideo');
-            
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-            canvas.style.display = 'block';
-            videoElement.style.display = 'none';
-
-            // 清除畫布
-            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 繪製視頻幀
-            canvasCtx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            
-            // 繪製姿態點和連線
-            drawPose(canvasCtx, results.poseLandmarks);
-            
-            // 保存用戶姿態數據
-            userPoseData.push(results.poseLandmarks);
-            
-            // 計算得分
-            calculateScore();
-        }
-
-        // 繪製姿態
-        function drawPose(ctx, landmarks) {
-            // 繪製關鍵點
-            landmarks.forEach(landmark => {
-                ctx.beginPath();
-                ctx.arc(landmark.x * ctx.canvas.width, landmark.y * ctx.canvas.height, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = '#00ff00';
-                ctx.fill();
-            });
-
-            // 繪製連線（簡化版）
-            const connections = [
-                [11, 12], [11, 13], [12, 14], [13, 15], [14, 16], // 上身
-                [11, 23], [12, 24], [23, 24], // 軀幹
-                [23, 25], [24, 26], [25, 27], [26, 28] // 下身
-            ];
-
-            ctx.strokeStyle = '#00ff00';
-            ctx.lineWidth = 2;
-            
-            connections.forEach(([start, end]) => {
-                if (landmarks[start] && landmarks[end]) {
-                    ctx.beginPath();
-                    ctx.moveTo(landmarks[start].x * ctx.canvas.width, landmarks[start].y * ctx.canvas.height);
-                    ctx.lineTo(landmarks[end].x * ctx.canvas.width, landmarks[end].y * ctx.canvas.height);
-                    ctx.stroke();
+        // 显示指定页面，隐藏其他页面
+        function showPage(pageElement) {
+            const pages = [userInfoPage, gamePage, disclaimerModal, gameOverModal];
+            pages.forEach(page => {
+                if (page) {
+                    page.style.removeProperty('display');
+                    page.style.display = 'none';
                 }
             });
-        }
-
-        // 計算得分
-        function calculateScore() {
-            if (standardPoseData.length === 0 || userPoseData.length === 0) return;
-
-            // 獲取最新的標準姿態和用戶姿態
-            const standardPose = standardPoseData[standardPoseData.length - 1];
-            const userPose = userPoseData[userPoseData.length - 1];
-
-            if (!standardPose || !userPose) return;
-
-            // MediaPipe Pose 骨骼关节点定义（排除面部和手部细节）
-            const SKELETAL_KEYPOINTS = {
-                // 上半身主要关节点
-                LEFT_SHOULDER: 11,
-                RIGHT_SHOULDER: 12,
-                LEFT_ELBOW: 13,
-                RIGHT_ELBOW: 14,
-                LEFT_WRIST: 15,
-                RIGHT_WRIST: 16,
-                // 下半身主要关节点
-                LEFT_HIP: 23,
-                RIGHT_HIP: 24,
-                LEFT_KNEE: 25,
-                RIGHT_KNEE: 26,
-                LEFT_ANKLE: 27,
-                RIGHT_ANKLE: 28,
-                LEFT_HEEL: 29,
-                RIGHT_HEEL: 30,
-                LEFT_FOOT_INDEX: 31,
-                RIGHT_FOOT_INDEX: 32
-            };
-
-            // 关键点权重配置（不同关节点的重要性不同）
-            const KEYPOINT_WEIGHTS = {
-                // 核心关节点权重更高
-                [SKELETAL_KEYPOINTS.LEFT_SHOULDER]: 1.2,
-                [SKELETAL_KEYPOINTS.RIGHT_SHOULDER]: 1.2,
-                [SKELETAL_KEYPOINTS.LEFT_HIP]: 1.2,
-                [SKELETAL_KEYPOINTS.RIGHT_HIP]: 1.2,
-                // 肘部和膝盖权重中等
-                [SKELETAL_KEYPOINTS.LEFT_ELBOW]: 1.0,
-                [SKELETAL_KEYPOINTS.RIGHT_ELBOW]: 1.0,
-                [SKELETAL_KEYPOINTS.LEFT_KNEE]: 1.0,
-                [SKELETAL_KEYPOINTS.RIGHT_KNEE]: 1.0,
-                // 手腕和脚踝权重较低
-                [SKELETAL_KEYPOINTS.LEFT_WRIST]: 0.8,
-                [SKELETAL_KEYPOINTS.RIGHT_WRIST]: 0.8,
-                [SKELETAL_KEYPOINTS.LEFT_ANKLE]: 0.8,
-                [SKELETAL_KEYPOINTS.RIGHT_ANKLE]: 0.8,
-                // 脚部关键点权重最低
-                [SKELETAL_KEYPOINTS.LEFT_HEEL]: 0.6,
-                [SKELETAL_KEYPOINTS.RIGHT_HEEL]: 0.6,
-                [SKELETAL_KEYPOINTS.LEFT_FOOT_INDEX]: 0.6,
-                [SKELETAL_KEYPOINTS.RIGHT_FOOT_INDEX]: 0.6
-            };
-
-            let totalWeightedSimilarity = 0;
-            let totalWeight = 0;
-
-            // 遍历所有骨骼关节点
-            Object.values(SKELETAL_KEYPOINTS).forEach(pointIndex => {
-                const standardPoint = standardPose[pointIndex];
-                const userPoint = userPose[pointIndex];
-                
-                // 检查关键点是否存在且可见度足够
-                if (standardPoint && userPoint && 
-                    standardPoint.visibility > 0.5 && userPoint.visibility > 0.5) {
-                    
-                    // 计算 3D 欧几里得距离
-                    const distance = Math.sqrt(
-                        Math.pow(standardPoint.x - userPoint.x, 2) +
-                        Math.pow(standardPoint.y - userPoint.y, 2) +
-                        Math.pow(standardPoint.z - userPoint.z, 2)
-                    );
-                    
-                    // 将距离转换为相似度分数 (0-100)
-                    // 使用指数衰减函数，使得小距离获得更高分数
-                    const similarity = 100 * Math.exp(-distance * 5);
-                    
-                    // 应用权重
-                    const weight = KEYPOINT_WEIGHTS[pointIndex] || 1.0;
-                    totalWeightedSimilarity += similarity * weight;
-                    totalWeight += weight;
-                }
-            });
-
-            if (totalWeight > 0) {
-                const frameScore = totalWeightedSimilarity / totalWeight;
-                totalScore += frameScore;
-                frameCount++;
-                
-                // 更新显示的平均得分
-                const averageScore = Math.round(totalScore / frameCount);
-                document.getElementById('currentScore').textContent = averageScore;
-            }
-        }
-        
-        // 遊戲控制
-        function toggleGame() {
-            if (gameState === 'stopped') {
-                startGame();
+            if (pageElement === disclaimerModal || pageElement === gameOverModal) {
+                pageElement.style.removeProperty('display');
+                pageElement.style.display = 'flex';
             } else {
-                stopGame();
+                pageElement.style.removeProperty('display');
+                pageElement.style.display = 'block';
             }
         }
 
-        function startGame() {
-            gameState = 'countdown';
-            const btn = document.getElementById('gameControlBtn');
-            btn.disabled = true;
-            btn.textContent = currentLanguage === 'zh' ? '準備中...' : 'Preparing...';
-            
-            // 重置遊戲數據
-            standardPoseData = [];
-            userPoseData = [];
-            totalScore = 0;
-            frameCount = 0;
-            document.getElementById('currentScore').textContent = '0';
-            
-            // 開始倒數
-            startCountdown();
+        // 网页加载完成后，首先显示免责声明模态框并初始化语言
+        window.onload = async () => {
+            updateLanguage(); // 设置初始语言
+            showPage(disclaimerModal);
+            // 异步创建 PoseLandmarker 实例，确保在 DOM 加载和模块解析完成后进行
+            // 使用 setTimeout 0 延迟，确保所有模块加载完毕
+            setTimeout(async () => {
+                await createPoseLandmarker();
+            }, 0);
+        };
+
+        // 免责声明确认按钮点击事件
+        document.getElementById('confirmDisclaimerBtn').addEventListener('click', () => {
+            showPage(userInfoPage);
+        });
+
+        // --- 用户信息收集与 BMI 计算 ---
+        let userAge, userWeight, userHeight;
+
+        // 提交用户信息按钮点击事件
+        document.getElementById('submitUserInfoBtn').addEventListener('click', () => {
+            userAge = parseInt(document.getElementById('ageInput').value);
+            userWeight = parseFloat(document.getElementById('weightInput').value);
+            userHeight = parseFloat(document.getElementById('heightInput').value);
+
+            // 验证输入是否有效
+            if (isNaN(userAge) || isNaN(userWeight) || isNaN(userHeight) || userAge <= 0 || userWeight <= 0 || userHeight <= 0) {
+                // 使用自定义弹窗或更友好的UI提示代替alert
+                alert(translations[currentLanguage].invalidInputError);
+                return;
+            }
+
+            // 计算BMI
+            const bmi = userWeight / (userHeight * userHeight);
+            let defaultDifficulty = 'mid'; // 默认难度为中等
+
+            // 根据年龄和BMI设置默认游戏难度
+            if (userAge > 70) {
+                defaultDifficulty = 'easy'; // 70 岁以上，默认低难度
+            } else if (bmi < 18.5) { // 偏瘦
+                defaultDifficulty = 'high';
+            } else if (bmi >= 18.5 && bmi < 24) { // 正常体重 (参考亚洲标准)
+                defaultDifficulty = 'high';
+            } else if (bmi >= 24 && bmi < 28) { // 超重
+                defaultDifficulty = 'mid';
+            } else if (bmi >= 28) { // 肥胖
+                defaultDifficulty = 'easy';
+            }
+
+            document.getElementById('difficultySelect').value = defaultDifficulty; // 设置下拉框的默认值
+            currentStandardVideo = `assets/${defaultDifficulty}.mp4`; // 设置标准视频路径
+            document.getElementById('standardVideo').src = currentStandardVideo; // 加载标准视频
+
+            showPage(gamePage); // 显示游戏页面
+            setupCamera(); // 设置并启动摄像头
+        });
+
+        // --- 游戏核心逻辑变量 ---
+        const userVideo = document.getElementById('userVideo');
+        const standardVideo = document.getElementById('standardVideo');
+        const userCanvas = document.getElementById('userCanvas');
+        const standardCanvas = document.getElementById('standardCanvas');
+        const countdownDisplay = document.getElementById('countdownDisplay');
+        const averageScoreDisplay = document.getElementById('averageScoreDisplay');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const difficultySelect = document.getElementById('difficultySelect');
+
+        let userVideoCtx = userCanvas.getContext('2d');
+        let standardVideoCtx = standardCanvas.getContext('2d');
+        let poseLandmarker; // MediaPipe PoseLandmarker 实例
+        let runningMode = "VIDEO"; // MediaPipe 运行模式
+        let lastVideoTime = -1; // 记录上一帧视频时间，避免重复处理
+        let userDrawingUtils; // 用于在用户视频 Canvas 上绘制
+        let standardDrawingUtils; // 用于在标准视频 Canvas 上绘制
+        let currentStandardVideo = 'assets/mid.mp4'; // 当前标准视频路径，默认中等难度
+        let isGameRunning = false; // 游戏是否正在进行
+        let animationFrameId; // requestAnimationFrame 的 ID，用于控制动画循环
+        let countdownTimer; // 倒计时定时器
+        let totalScore = 0; // 总得分
+        let frameCount = 0; // 已处理的帧数
+        let enablePoseDetection = false; // 是否启用姿态检测（在倒计时结束后开启）
+
+        // --- MediaPipe PoseLandmarker 初始化 ---
+        async function createPoseLandmarker() {
+            console.log("Attempting to create PoseLandmarker...");
+            // 从 CDN 加载 MediaPipe 的 WASM 文件
+            const vision = await FilesetResolver.forVisionTasks(
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+            );
+            console.log("FilesetResolver for vision tasks loaded.");
+            // 创建 PoseLandmarker 实例，加载轻量级模型，并设置 GPU 加速
+            poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+                baseOptions: {
+                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task`,
+                    delegate: "GPU"
+                },
+                runningMode: runningMode,
+                numPoses: 1 // 只检测一个人体
+            });
+            console.log("PoseLandmarker loaded successfully.");
         }
 
-        function startCountdown() {
-            const countdownElement = document.getElementById('countdown');
-            countdownElement.style.display = 'block';
+        // --- 摄像头设置 ---
+        async function setupCamera() {
+            // 检查浏览器是否支持 getUserMedia
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert(translations[currentLanguage].cameraAccessError);
+                return;
+            }
+
+            try {
+                // 请求访问用户摄像头
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                userVideo.srcObject = stream; // 将视频流设置到 userVideo 元素
+                // 视频数据加载完成后，设置 Canvas 尺寸并获取 2D 上下文和绘图工具
+                userVideo.addEventListener('loadeddata', () => {
+                    userCanvas.width = userVideo.videoWidth;
+                    userCanvas.height = userVideo.videoHeight;
+                    userVideoCtx = userCanvas.getContext('2d');
+                    userDrawingUtils = new DrawingUtils(userVideoCtx);
+                    console.log("User video loaded and canvas sized.");
+                    userVideo.play(); // 确保用户视频自动播放
+                });
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert(translations[currentLanguage].cameraAccessError);
+            }
+        }
+
+        // --- 标准视频设置 ---
+        // 游戏难度下拉框改变时，更新标准视频源
+        difficultySelect.addEventListener('change', () => {
+            if (!isGameRunning) { // 只有在游戏未运行时才能切换视频
+                currentStandardVideo = `assets/${difficultySelect.value}.mp4`;
+                standardVideo.src = currentStandardVideo;
+            }
+        });
+
+        // 标准视频数据加载完成后，设置 Canvas 尺寸并获取 2D 上下文和绘图工具
+        standardVideo.addEventListener('loadeddata', () => {
+            standardCanvas.width = standardVideo.videoWidth;
+            standardCanvas.height = standardVideo.videoHeight;
+            standardVideoCtx = standardCanvas.getContext('2d');
+            standardDrawingUtils = new DrawingUtils(standardVideoCtx);
+            console.log("Standard video loaded and canvas sized.");
+        });
+        // 保证 canvas 在视频尺寸变化时也同步
+        standardVideo.addEventListener('resize', () => {
+            standardCanvas.width = standardVideo.videoWidth;
+            standardCanvas.height = standardVideo.videoHeight;
+        });
+
+        // --- 姿态检测循环 ---
+        async function predictWebcam() {
+            // 如果 PoseLandmarker 未加载或姿态检测未启用，则继续下一帧动画
+            if (!poseLandmarker || !enablePoseDetection) {
+                animationFrameId = requestAnimationFrame(predictWebcam);
+                return;
+            }
+
+            let userResults = null;
+            // 仅当用户视频时间更新时才进行检测
+            if (userVideo.currentTime !== lastVideoTime) {
+                lastVideoTime = userVideo.currentTime;
+                // 对用户视频进行姿态检测
+                userResults = poseLandmarker.detectForVideo(userVideo, performance.now());
+            }
+
+            let standardResults = null;
+            // 只有当标准视频正在播放时才进行检测
+            if (standardVideo.currentTime > 0 && !standardVideo.paused && !standardVideo.ended) {
+                // 从当前标准视频帧创建 ImageBitmap，以便 MediaPipe 处理
+                const standardImageBitmap = await createImageBitmap(standardVideo);
+                // 对标准视频帧进行姿态检测
+                standardResults = poseLandmarker.detectForVideo(standardImageBitmap, performance.now());
+            }
+
+            // 清空 Canvas，准备绘制新帧
+            userVideoCtx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+            standardVideoCtx.clearRect(0, 0, standardCanvas.width, standardCanvas.height);
+
+            // 绘制用户姿态骨骼点和连接线
+            if (userResults && userResults.landmarks && userResults.landmarks.length > 0) {
+                for (const landmark of userResults.landmarks) {
+                    userDrawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS, { color: "#00FF00", lineWidth: 4 }); // 绿色连接线
+                    userDrawingUtils.drawLandmarks(landmark, { radius: 5, color: "#FF0000" }); // 红色骨骼点
+                }
+            }
+
+            // 绘制标准姿态骨骼点和连接线
+            if (standardResults && standardResults.landmarks && standardResults.landmarks.length > 0) {
+                for (const landmark of standardResults.landmarks) {
+                    standardDrawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS, { color: "#00FFFF", lineWidth: 4 }); // 青色连接线
+                    standardDrawingUtils.drawLandmarks(landmark, { radius: 5, color: "#FF00FF" }); // 紫色骨骼点
+                }
+            }
+
+            // 如果用户和标准视频都检测到了姿态，则计算并显示得分
+            if (userResults && userResults.landmarks && userResults.landmarks.length > 0 &&
+                standardResults && standardResults.landmarks && standardResults.landmarks.length > 0) {
+                calculateAndDisplayScore(userResults.landmarks[0], standardResults.landmarks[0]);
+            }
+
+            // 继续下一帧动画循环
+            animationFrameId = requestAnimationFrame(predictWebcam);
+        }
+
+        // --- 得分计算逻辑 (余弦相似度) ---
+        // 定义用于计算余弦相似度的关键关节对（骨骼向量）
+        // 具体的关节索引可以参考 MediaPipe Pose 的官方文档
+        const JOINT_PAIRS = [
+            // 左右臂
+            [11, 13], // 左肩到左肘
+            [13, 15], // 左肘到左腕
+            [12, 14], // 右肩到右肘
+            [14, 16], // 右肘到右腕
+            // 左右腿
+            [23, 25], // 左髋到左膝
+            [25, 27], // 左膝到左踝
+            [24, 26], // 右髋到右膝
+            [26, 28], // 右膝到右踝
+            // 躯干部分
+            [11, 23], // 左肩到左髋
+            [12, 24], // 右肩到右髋
+            [11, 12], // 双肩（用于水平对齐）
+            [23, 24]  // 双髋（用于水平对齐）
+        ];
+
+        // 获取两点之间的向量
+        function getVector(p1, p2) {
+            return { x: p2.x - p1.x, y: p2.y - p1.y, z: p2.z - p1.z };
+        }
+
+        // 计算向量点积
+        function dotProduct(v1, v2) {
+            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        }
+
+        // 计算向量的模（长度）
+        function magnitude(v) {
+            return Math.sqrt(v.x * v.x + v.y * v.y + v.z - v.z);
+        }
+
+        // 计算两个向量的余弦相似度
+        function cosineSimilarity(v1, v2) {
+            const mag1 = magnitude(v1);
+            const mag2 = magnitude(v2);
+            if (mag1 === 0 || mag2 === 0) return 0; // 避免除以零
+            // 余弦相似度公式：(v1 . v2) / (|v1| * |v2|)
+            return dotProduct(v1, v2) / (mag1 * mag2);
+        }
+
+        // 计算并显示当前帧得分
+        function calculateAndDisplayScore(userLandmarks, standardLandmarks) {
+            let frameScore = 0; // 当前帧的总相似度
+            let validVectorPairs = 0; // 有效的向量对数量
+
+            // 遍历所有定义的关节对
+            for (const [idx1, idx2] of JOINT_PAIRS) {
+                const userP1 = userLandmarks[idx1];
+                const userP2 = userLandmarks[idx2];
+                const standardP1 = standardLandmarks[idx1];
+                const standardP2 = standardLandmarks[idx2];
+
+                // 确保关键点都存在
+                if (userP1 && userP2 && standardP1 && standardP2) {
+                    const userVec = getVector(userP1, userP2);
+                    const standardVec = getVector(standardP1, standardP2);
+
+                    const similarity = cosineSimilarity(userVec, standardVec);
+                    // 余弦相似度范围是 -1 到 1。为了方便计分，将其映射到 0 到 1 的范围：(similarity + 1) / 2
+                    frameScore += (similarity + 1) / 2;
+                    validVectorPairs++;
+                }
+            }
+
+            if (validVectorPairs > 0) {
+                const averageSimilarity = frameScore / validVectorPairs; // 计算平均相似度
+                const score = Math.round(averageSimilarity * 100); // 将相似度转换为 0-100 的得分
+                totalScore += score; // 累加总分
+                frameCount++; // 增加帧计数
+                // 更新显示当前平均得分
+                averageScoreDisplay.textContent = Math.round(totalScore / frameCount);
+            }
+        }
+
+        // --- 游戏开始/结束逻辑 ---
+        startGameBtn.addEventListener('click', () => {
+            if (!isGameRunning) {
+                startGame(); // 如果游戏未开始，则启动游戏
+            } else {
+                endGame(); // 如果游戏正在进行，则结束游戏
+            }
+        });
+
+        // 启动游戏流程
+        async function startGame() {
+            // 检查 MediaPipe 模型是否加载完成
+            if (!poseLandmarker) {
+                alert('MediaPipe 模型正在加载中，请稍候...');
+                return;
+            }
+            // 检查摄像头是否已成功访问
+            if (!userVideo.srcObject) {
+                alert(translations[currentLanguage].cameraAccessError);
+                return;
+            }
+
+            isGameRunning = true;
+            startGameBtn.textContent = translations[currentLanguage].endGameBtn; // 更改按钮文本为"结束游戏"
+            totalScore = 0; // 重置总分
+            frameCount = 0; // 重置帧计数
+            averageScoreDisplay.textContent = '0'; // 重置显示得分
+            difficultySelect.disabled = true; // 游戏进行中禁用难度选择
+
+            // 显示倒计时
+            countdownDisplay.classList.remove('hidden');
             let count = 3;
-            
-            const countdownInterval = setInterval(() => {
-                countdownElement.textContent = count;
+            countdownDisplay.textContent = count;
+            countdownTimer = setInterval(() => {
                 count--;
-                
-                if (count < 0) {
-                    clearInterval(countdownInterval);
-                    countdownElement.style.display = 'none';
-                    startActualGame();
+                countdownDisplay.textContent = count;
+                if (count === 0) {
+                    clearInterval(countdownTimer); // 清除倒计时定时器
+                    countdownDisplay.classList.add('hidden'); // 隐藏倒计时
+                    startPoseDetection(); // 开始姿态检测
                 }
             }, 1000);
         }
 
-        function startActualGame() {
-            gameState = 'playing';
-            gameStartTime = Date.now();
-            
-            const btn = document.getElementById('gameControlBtn');
-            btn.disabled = false;
-            btn.textContent = currentLanguage === 'zh' ? '結束遊戲' : 'Stop Game';
-            
-            // 開始播放標準視頻
-            const standardVideo = document.getElementById('standardVideo');
-            standardVideo.style.display = 'block';
-            standardVideo.currentTime = 0;
-            standardVideo.play();
-            
-            // 監聽標準視頻結束
-            standardVideo.onended = () => {
-                stopGame();
-            };
-            
-            // 開始分析標準視頻（簡化版 - 實際應用中需要更複雜的實現）
-            simulateStandardPoseData();
+        // 实际开始姿态检测和视频播放
+        function startPoseDetection() {
+            standardVideo.play(); // 播放标准视频
+            userVideo.play(); // 确保用户摄像头视频播放
+            enablePoseDetection = true; // 启用姿态检测
+            // 启动 MediaPipe 预测循环
+            animationFrameId = requestAnimationFrame(predictWebcam);
+            // 监听标准视频播放结束事件，自动结束游戏
+            standardVideo.addEventListener('ended', endGame, { once: true });
         }
 
-        function simulateStandardPoseData() {
-            // 這裡應該分析標準視頻的每一幀
-            // 為了演示，我們生成一些模擬數據
-            gameInterval = setInterval(() => {
-                if (gameState === 'playing') {
-                    // 生成模擬的標準姿態數據
-                    const mockStandardPose = generateMockPoseData();
-                    standardPoseData.push(mockStandardPose);
-                }
-            }, 100); // 每 100ms 生成一次數據
+        // 结束游戏流程
+        function endGame() {
+            isGameRunning = false;
+            enablePoseDetection = false; // 禁用姿态检测
+            startGameBtn.textContent = translations[currentLanguage].startGameBtn; // 恢复按钮文本为"开始游戏"
+            difficultySelect.disabled = false; // 重新启用难度选择
+
+            clearInterval(countdownTimer); // 清除倒计时
+            cancelAnimationFrame(animationFrameId); // 取消动画帧循环
+
+            userVideo.pause(); // 暂停用户视频
+            standardVideo.pause(); // 暂停标准视频
+            standardVideo.currentTime = 0; // 标准视频重置到开头
+
+            // 清空 Canvas 内容
+            userVideoCtx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+            standardVideoCtx.clearRect(0, 0, standardCanvas.width, standardCanvas.height);
+
+            showGameOverModal(); // 显示游戏结束模态框
         }
 
-        function generateMockPoseData() {
-            // 生成 33 個關鍵點的模擬數據
-            const pose = [];
-            for (let i = 0; i < 33; i++) {
-                pose.push({
-                    x: Math.random() * 0.6 + 0.2, // 0.2 到 0.8 之間
-                    y: Math.random() * 0.6 + 0.2,
-                    z: Math.random() * 0.2 - 0.1,
-                    visibility: Math.random() * 0.5 + 0.5
+        // 显示游戏结束模态框并提供建议
+        function showGameOverModal() {
+            // 计算最终平均得分
+            const finalScore = frameCount > 0 ? Math.round(totalScore / frameCount) : 0;
+            document.getElementById('finalScoreDisplay').textContent = finalScore;
+
+            let adviceText = '';
+            let supplement = '';
+            // 根據分數區間推薦不同保健品
+            if (finalScore < 50) {
+                const supplements = translations[currentLanguage].nutritionAdviceLowSupplements;
+                supplement = supplements[Math.floor(Math.random() * supplements.length)];
+                adviceText = `${translations[currentLanguage].nutritionAdviceLow}<br><strong style='color:#d97706;'>推薦：${supplement}</strong>`;
+                document.getElementById('nutritionAdvice').innerHTML = adviceText;
+            } else if (finalScore >= 50 && finalScore < 150) {
+                const supplements = translations[currentLanguage].nutritionAdviceMidSupplements;
+                supplement = supplements[Math.floor(Math.random() * supplements.length)];
+                adviceText = `${translations[currentLanguage].nutritionAdviceMid}<br><strong style='color:#2563eb;'>推薦：${supplement}</strong>`;
+                document.getElementById('nutritionAdvice').innerHTML = adviceText;
+            } else if (finalScore >= 150) {
+                const supplements = translations[currentLanguage].nutritionAdviceHighSupplements;
+                supplement = supplements[Math.floor(Math.random() * supplements.length)];
+                adviceText = `${translations[currentLanguage].nutritionAdviceHigh}<br><strong style='color:#059669;'>推薦：${supplement}</strong>`;
+                document.getElementById('nutritionAdvice').innerHTML = adviceText;
+            }
+            document.getElementById('nutritionAdvice').innerHTML = adviceText;
+            showPage(gameOverModal); // 显示游戏结束模态框
+        }
+
+        // 重新开始游戏按钮点击事件
+        document.getElementById('restartGameBtn').addEventListener('click', () => {
+            showPage(gamePage); // 返回游戏主页面
+            averageScoreDisplay.textContent = '0'; // 重置得分显示
+            userVideo.play(); // 确保用户摄像头视频继续播放
+        });
+
+        // 确保用户视频在离开游戏页面后不会暂停，以便返回时能立即使用
+        userVideo.addEventListener('pause', () => {
+            if (isGameRunning) userVideo.play(); // 如果游戏正在进行，则保持播放
+        });
+        userVideo.addEventListener('ended', () => {
+            if (isGameRunning) userVideo.play(); // 如果用户视频结束（不应该发生，但以防万一），重新播放
+        });
+
+        // 自动播放音乐
+        window.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('bgm');
+            if (audio) {
+                audio.volume = 0.5;
+                audio.play().catch(() => {
+                    // 部分浏览器需用户交互后播放
+                    document.body.addEventListener('click', () => audio.play(), { once: true });
                 });
             }
-            return pose;
-        }
+        });
 
-        function stopGame() {
-            gameState = 'stopped';
+        // --- Tab 切换功能 ---
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                
+                // 移除所有活跃状态
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // 添加活跃状态
+                button.classList.add('active');
+                document.getElementById(targetTab + 'Content').classList.add('active');
+            });
+        });
+
+        // --- 餐厅推荐功能 ---
+        const restaurantData = {
+            '香港': [
+                { name: '大家樂', type: '港式茶餐廳', rating: '4.2/5', address: '全港多個分店', description: '提供清淡粥品、蒸蛋、白切雞等適合長者的健康選擇' },
+                { name: '一粥麵', type: '粥麵專門店', rating: '4.3/5', address: '全港多個分店', description: '專營各式養生粥品，少油少鹽，營養豐富' },
+                { name: '美心餐廳', type: '港式餐廳', rating: '4.1/5', address: '全港多個分店', description: '提供蒸魚、白灼菜心等清淡菜式' },
+                { name: '翠華餐廳', type: '茶餐廳', rating: '4.0/5', address: '全港多個分店', description: '有清湯麵條、蒸蛋等適合長者的選擇' },
+                { name: '稻香', type: '中式餐廳', rating: '4.4/5', address: '全港多個分店', description: '提供清蒸點心、白粥等健康選擇' },
+                { name: '添好運', type: '港式點心', rating: '4.2/5', address: '全港多個分店', description: '米其林推薦，提供清淡點心選擇' }
+            ],
+            '台北': [
+                { name: '鬍鬚張', type: '台式小吃', rating: '4.1/5', address: '台北多個分店', description: '滷肉飯口味清淡，適合長者' },
+                { name: '永和豆漿', type: '早餐店', rating: '4.0/5', address: '台北多個分店', description: '豆漿、稀飯等清淡營養早餐' },
+                { name: '鼎泰豐', type: '小籠包', rating: '4.5/5', address: '信義區、中山區等', description: '清湯小籠包，製作精細' },
+                { name: '欣葉餐廳', type: '台菜', rating: '4.3/5', address: '台北多個分店', description: '提供清蒸魚、燙青菜等健康台菜' }
+            ],
+            '上海': [
+                { name: '南翔饅頭店', type: '上海小吃', rating: '4.2/5', address: '豫園、淮海路等', description: '清湯小籠包，口味清淡' },
+                { name: '老盛昌', type: '湯包店', rating: '4.1/5', address: '上海多個分店', description: '各式清湯湯包，營養豐富' },
+                { name: '新雅粤菜館', type: '粵菜', rating: '4.4/5', address: '南京東路', description: '清蒸魚、白切雞等清淡粵菜' },
+                { name: '功德林', type: '素食', rating: '4.0/5', address: '南京西路', description: '素食餐廳，清淡健康' }
+            ]
+        };
+
+        document.getElementById('getLocationBtn').addEventListener('click', () => {
+            const location = document.getElementById('locationInput').value.trim();
+            const restaurantList = document.getElementById('restaurantList');
             
-            if (gameInterval) {
-                clearInterval(gameInterval);
-                gameInterval = null;
+            if (!location) {
+                alert('請輸入您的位置');
+                return;
             }
             
-            const btn = document.getElementById('gameControlBtn');
-            btn.disabled = false;
-            btn.textContent = currentLanguage === 'zh' ? '開始遊戲' : 'Start Game';
+            const restaurants = restaurantData[location] || [];
             
-            // 停止標準視頻
-            const standardVideo = document.getElementById('standardVideo');
-            standardVideo.style.display = 'none';
-            standardVideo.pause();
+            if (restaurants.length === 0) {
+                restaurantList.innerHTML = '<p class="text-center text-gray-500 col-span-full">暫無該地區的餐廳推薦，請嘗試其他城市如：香港、台北、上海</p>';
+                return;
+            }
             
-            // 顯示用戶視頻
-            document.getElementById('userVideo').style.display = 'block';
-            document.getElementById('userCanvas').style.display = 'none';
-            
-            // 顯示遊戲結果
-            showGameResult();
-        }
+            restaurantList.innerHTML = restaurants.map(restaurant => `
+                <div class="recommendation-card">
+                    <h4>${restaurant.name}</h4>
+                    <p><strong>類型：</strong>${restaurant.type}</p>
+                    <p class="rating"><strong>評分：</strong>${restaurant.rating}</p>
+                    <p class="address"><strong>地址：</strong>${restaurant.address}</p>
+                    <p><strong>推薦理由：</strong>${restaurant.description}</p>
+                </div>
+            `).join('');
+        });
 
-        function showGameResult() {
-            const finalScore = frameCount > 0 ? Math.round(totalScore / frameCount) : 0;
-            document.getElementById('finalScore').textContent = finalScore;
-            
-            // 生成營養建議
-            const nutritionAdvice = generateNutritionAdvice(finalScore);
-            document.getElementById('nutritionAdviceText').textContent = nutritionAdvice;
-            
-            document.getElementById('gameResultModal').style.display = 'block';
-        }
+        // --- 健身房推荐功能 ---
+        const gymData = {
+            '香港': [
+                { name: 'Pure Fitness', type: '連鎖健身房', rating: '4.3/5', address: '中環、銅鑼灣等', description: '設有長者專屬時段，提供水中運動、太極等適合長者的課程' },
+                { name: 'Fitness First', type: '國際連鎖', rating: '4.2/5', address: '全港多個分店', description: '有專業教練指導，提供低強度運動課程' },
+                { name: '康文署體育館', type: '公共設施', rating: '4.0/5', address: '各區體育館', description: '收費便宜，設有長者健身器材和太極班' },
+                { name: 'YMCA', type: '基督教青年會', rating: '4.1/5', address: '中環、尖沙咀等', description: '專為長者設計的運動課程，包括水療和輕量訓練' }
+            ],
+            '台北': [
+                { name: 'World Gym', type: '連鎖健身房', rating: '4.2/5', address: '台北多個分店', description: '設有銀髮族專區，提供適合長者的運動器材' },
+                { name: '健身工廠', type: '本土連鎖', rating: '4.1/5', address: '台北多個分店', description: '價格親民，有長者友善的運動課程' },
+                { name: '台北市運動中心', type: '公共設施', rating: '4.0/5', address: '各區運動中心', description: '公營設施，提供長者專屬運動時段' },
+                { name: 'Curves', type: '女性專用', rating: '4.3/5', address: '台北多個分店', description: '30 分鐘循環運動，適合長者女性' }
+            ],
+            '上海': [
+                { name: '威爾士健身', type: '連鎖健身房', rating: '4.2/5', address: '上海多個分店', description: '設有長者運動課程，專業教練指導' },
+                { name: '一兆韋德', type: '本土連鎖', rating: '4.1/5', address: '上海多個分店', description: '提供太極、瑜伽等適合長者的課程' },
+                { name: '上海市民健身中心', type: '公共設施', rating: '4.0/5', address: '各區健身中心', description: '政府運營，收費低廉，設施完善' },
+                { name: '舒適堡', type: '高端健身', rating: '4.4/5', address: '浦東、徐匯等', description: '環境舒適，有專門的長者運動區域' }
+            ]
+        };
 
-        function generateNutritionAdvice(score) {
-            const adviceZh = {
-                high: "您的動作標準程度很高！建議繼續保持均衡飲食，多攝取富含蛋白質的食物如魚類、豆類，以及新鮮蔬菜水果。適量補充維生素 D 和鈣質，有助於骨骼健康。",
-                medium: "您的動作標準程度中等，建議加強營養攝取。多吃富含 omega-3 脂肪酸的食物如深海魚、堅果，增加蛋白質攝取，適量補充維生素 B 群和鎂元素，有助於肌肉功能。",
-                low: "建議加強營養補充，多攝取優質蛋白質如瘦肉、雞蛋、乳製品，增加維生素 C 和 E 的攝取，多吃抗氧化食物如藍莓、綠茶。建議諮詢營養師制定個人化飲食計畫。"
-            };
+        document.getElementById('getGymBtn').addEventListener('click', () => {
+            const location = document.getElementById('gymLocationInput').value.trim();
+            const gymList = document.getElementById('gymList');
             
-            const adviceEn = {
-                high: "Your movement accuracy is excellent! Continue maintaining a balanced diet with protein-rich foods like fish and legumes, plus fresh vegetables and fruits. Adequate vitamin D and calcium supplementation helps bone health.",
-                medium: "Your movement accuracy is moderate. Strengthen nutrition intake with omega-3 rich foods like deep-sea fish and nuts, increase protein intake, and supplement with vitamin B complex and magnesium for muscle function.",
-                low: "Recommend strengthening nutritional supplementation with high-quality proteins like lean meat, eggs, and dairy products. Increase vitamin C and E intake with antioxidant foods like blueberries and green tea. Consider consulting a nutritionist for a personalized diet plan."
-            };
+            if (!location) {
+                alert('請輸入您的位置');
+                return;
+            }
             
-            const advice = currentLanguage === 'zh' ? adviceZh : adviceEn;
+            const gyms = gymData[location] || [];
             
-            if (score >= 80) return advice.high;
-            if (score >= 60) return advice.medium;
-            return advice.low;
-        }
+            if (gyms.length === 0) {
+                gymList.innerHTML = '<p class="text-center text-gray-500 col-span-full">暫無該地區的健身房推薦，請嘗試其他城市如：香港、台北、上海</p>';
+                return;
+            }
+            
+            gymList.innerHTML = gyms.map(gym => `
+                <div class="recommendation-card">
+                    <h4>${gym.name}</h4>
+                    <p><strong>類型：</strong>${gym.type}</p>
+                    <p class="rating"><strong>評分：</strong>${gym.rating}</p>
+                    <p class="address"><strong>地址：</strong>${gym.address}</p>
+                    <p><strong>特色：</strong>${gym.description}</p>
+                </div>
+            `).join('');
+        });
 
-        function restartGame() {
-            document.getElementById('gameResultModal').style.display = 'none';
-            document.getElementById('userInfoModal').style.display = 'block';
-        }
+        // --- 保健品推荐功能 ---
+        const supplementData = {
+            cardiovascular: [
+                { name: '深海魚油', brand: 'Nordic Naturals', rating: '4.5/5', price: 'HK$280-350', description: '富含 Omega-3，有助心血管健康，降低血脂' },
+                { name: '輔酶 Q10', brand: 'Life Extension', rating: '4.4/5', price: 'HK$320-400', description: '保護心肌，改善心臟功能，抗氧化' },
+                { name: '納豆激酶', brand: '日本味王', rating: '4.3/5', price: 'HK$200-280', description: '幫助血液循環，預防血栓形成' },
+                { name: '紅麴', brand: '統一生機', rating: '4.2/5', price: 'HK$150-200', description: '天然降膽固醇，維護心血管健康' }
+            ],
+            protein: [
+                { name: '乳清蛋白', brand: 'Optimum Nutrition', rating: '4.6/5', price: 'HK$400-500', description: '易吸收蛋白質，維持肌肉量，適合長者' },
+                { name: '膠原蛋白', brand: 'DHC', rating: '4.3/5', price: 'HK$180-250', description: '維持皮膚彈性，保護關節軟骨' },
+                { name: '植物蛋白', brand: 'Garden of Life', rating: '4.4/5', price: 'HK$350-450', description: '植物性蛋白質，易消化，適合素食者' },
+                { name: '胺基酸複合物', brand: 'NOW Foods', rating: '4.2/5', price: 'HK$200-300', description: '全面胺基酸補充，促進蛋白質合成' }
+            ],
+            joint: [
+                { name: '葡萄糖胺', brand: 'Move Free', rating: '4.4/5', price: 'HK$250-350', description: '維護關節軟骨，減緩關節退化' },
+                { name: '軟骨素', brand: 'Schiff', rating: '4.3/5', price: 'HK$300-400', description: '保護關節，減少關節疼痛和僵硬' },
+                { name: 'MSM 有機硫', brand: 'Puritan\'s Pride', rating: '4.2/5', price: 'HK$180-250', description: '天然抗炎，改善關節靈活性' },
+                { name: '薑黃素', brand: 'Swanson', rating: '4.5/5', price: 'HK$150-220', description: '強效抗炎，緩解關節不適' }
+            ],
+            immunity: [
+                { name: '維生素 C', brand: 'Emergen-C', rating: '4.4/5', price: 'HK$120-180', description: '增強免疫力，抗氧化，促進鐵質吸收' },
+                { name: '維生素 D3', brand: 'Nature Made', rating: '4.5/5', price: 'HK$100-150', description: '強化骨骼，調節免疫系統' },
+                { name: '益生菌', brand: 'Culturelle', rating: '4.3/5', price: 'HK$280-350', description: '改善腸道健康，增強免疫力' },
+                { name: '蜂膠', brand: '澳洲 Comvita', rating: '4.2/5', price: 'HK$200-280', description: '天然抗菌，提升免疫防護' }
+            ]
+        };
 
-        // 初始化語言
-        updateLanguage();
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const supplementList = document.getElementById('supplementList');
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
+                
+                // 移除所有活跃状态
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // 显示对应分类的保健品
+                const supplements = supplementData[category] || [];
+                supplementList.innerHTML = supplements.map(supplement => `
+                    <div class="recommendation-card">
+                        <h4>${supplement.name}</h4>
+                        <p><strong>品牌：</strong>${supplement.brand}</p>
+                        <p class="rating"><strong>評分：</strong>${supplement.rating}</p>
+                        <p><strong>價格：</strong>${supplement.price}</p>
+                        <p><strong>功效：</strong>${supplement.description}</p>
+                    </div>
+                `).join('');
+            });
+        });
+
+        // 默认显示心血管保健品
+        document.getElementById('cardiovascularBtn').click();
     </script>
 </body>
-</html> 
+</html>
