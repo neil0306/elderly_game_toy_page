@@ -1381,21 +1381,17 @@
                 { name: '大家樂', type: '港式茶餐廳', rating: '4.2/5', address: '全港多個分店', description: '提供清淡粥品、蒸蛋、白切雞等適合長者的健康選擇' },
                 { name: '一粥麵', type: '粥麵專門店', rating: '4.3/5', address: '全港多個分店', description: '專營各式養生粥品，少油少鹽，營養豐富' },
                 { name: '美心餐廳', type: '港式餐廳', rating: '4.1/5', address: '全港多個分店', description: '提供蒸魚、白灼菜心等清淡菜式' },
-                { name: '翠華餐廳', type: '茶餐廳', rating: '4.0/5', address: '全港多個分店', description: '有清湯麵條、蒸蛋等適合長者的選擇' },
-                { name: '稻香', type: '中式餐廳', rating: '4.4/5', address: '全港多個分店', description: '提供清蒸點心、白粥等健康選擇' },
-                { name: '添好運', type: '港式點心', rating: '4.2/5', address: '全港多個分店', description: '米其林推薦，提供清淡點心選擇' }
+                { name: '翠華餐廳', type: '茶餐廳', rating: '4.0/5', address: '全港多個分店', description: '有清湯麵條、蒸蛋等適合長者的選擇' }
             ],
             '台北': [
                 { name: '鬍鬚張', type: '台式小吃', rating: '4.1/5', address: '台北多個分店', description: '滷肉飯口味清淡，適合長者' },
                 { name: '永和豆漿', type: '早餐店', rating: '4.0/5', address: '台北多個分店', description: '豆漿、稀飯等清淡營養早餐' },
-                { name: '鼎泰豐', type: '小籠包', rating: '4.5/5', address: '信義區、中山區等', description: '清湯小籠包，製作精細' },
-                { name: '欣葉餐廳', type: '台菜', rating: '4.3/5', address: '台北多個分店', description: '提供清蒸魚、燙青菜等健康台菜' }
+                { name: '鼎泰豐', type: '小籠包', rating: '4.5/5', address: '信義區、中山區等', description: '清湯小籠包，製作精細' }
             ],
             '上海': [
                 { name: '南翔饅頭店', type: '上海小吃', rating: '4.2/5', address: '豫園、淮海路等', description: '清湯小籠包，口味清淡' },
                 { name: '老盛昌', type: '湯包店', rating: '4.1/5', address: '上海多個分店', description: '各式清湯湯包，營養豐富' },
-                { name: '新雅粤菜館', type: '粵菜', rating: '4.4/5', address: '南京東路', description: '清蒸魚、白切雞等清淡粵菜' },
-                { name: '功德林', type: '素食', rating: '4.0/5', address: '南京西路', description: '素食餐廳，清淡健康' }
+                { name: '新雅粤菜館', type: '粵菜', rating: '4.4/5', address: '南京東路', description: '清蒸魚、白切雞等清淡粵菜' }
             ]
         };
 
@@ -1453,7 +1449,8 @@
             const gymList = document.getElementById('gymList');
             
             if (!location) {
-                alert('請輸入您的位置');
+                // 如果没有输入，则调用地理位置功能
+                handleGymLocation();
                 return;
             }
             
@@ -1530,6 +1527,9 @@
 
         // 默认显示心血管保健品
         document.getElementById('cardiovascularBtn').click();
+
+        // --- 旧的健身房事件监听器（已被新的地理位置功能替代） ---
+        // 这个事件监听器在下面的地理位置功能中被重新绑定
 
         // --- 地理位置餐厅推荐功能 ---
         // 扩展餐厅数据，包含地理位置信息
@@ -1641,18 +1641,30 @@
             return locationBasedGymData.general;
         }
 
-        // 重新绑定餐厅推荐按钮事件
-        document.getElementById('getLocationBtn').removeEventListener('click', arguments.callee);
-        document.getElementById('getLocationBtn').addEventListener('click', () => {
+        // 地理位置餐厅推荐事件处理函数
+        function handleRestaurantLocation() {
+            console.log('餐厅位置按钮被点击');
             const locationStatus = document.getElementById('locationStatus');
             const restaurantList = document.getElementById('restaurantList');
+            
+            if (!locationStatus) {
+                console.error('找不到 locationStatus 元素');
+                return;
+            }
+            
+            if (!restaurantList) {
+                console.error('找不到 restaurantList 元素');
+                return;
+            }
             
             if (!navigator.geolocation) {
                 locationStatus.textContent = translations[currentLanguage].locationError;
                 locationStatus.style.color = '#ef4444';
+                console.log('浏览器不支持地理位置');
                 return;
             }
             
+            console.log('开始获取地理位置...');
             locationStatus.textContent = translations[currentLanguage].locationStatus;
             locationStatus.style.color = '#6b7280';
             
@@ -1661,10 +1673,12 @@
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
+                    console.log('获取到位置:', lat, lng);
                     locationStatus.textContent = translations[currentLanguage].locationSuccess;
                     locationStatus.style.color = '#10b981';
                     
                     const restaurants = getRestaurantsByLocation(lat, lng);
+                    console.log('找到餐厅:', restaurants.length);
                     
                     restaurantList.innerHTML = restaurants.map(restaurant => `
                         <div class="recommendation-card">
@@ -1677,6 +1691,7 @@
                     `).join('');
                 },
                 (error) => {
+                    console.error('地理位置错误:', error);
                     let errorMessage = translations[currentLanguage].locationError;
                     
                     switch(error.code) {
@@ -1710,20 +1725,32 @@
                     maximumAge: 300000
                 }
             );
-        });
+        }
 
-        // 重新绑定健身房推荐按钮事件
-        document.getElementById('getGymBtn').removeEventListener('click', arguments.callee);
-        document.getElementById('getGymBtn').addEventListener('click', () => {
+        // 地理位置健身房推荐事件处理函数
+        function handleGymLocation() {
+            console.log('健身房位置按钮被点击');
             const gymLocationStatus = document.getElementById('gymLocationStatus');
             const gymList = document.getElementById('gymList');
+            
+            if (!gymLocationStatus) {
+                console.error('找不到 gymLocationStatus 元素');
+                return;
+            }
+            
+            if (!gymList) {
+                console.error('找不到 gymList 元素');
+                return;
+            }
             
             if (!navigator.geolocation) {
                 gymLocationStatus.textContent = translations[currentLanguage].gymLocationError;
                 gymLocationStatus.style.color = '#ef4444';
+                console.log('浏览器不支持地理位置');
                 return;
             }
             
+            console.log('开始获取地理位置...');
             gymLocationStatus.textContent = translations[currentLanguage].gymLocationStatus;
             gymLocationStatus.style.color = '#6b7280';
             
@@ -1732,10 +1759,12 @@
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
+                    console.log('获取到位置:', lat, lng);
                     gymLocationStatus.textContent = translations[currentLanguage].gymLocationSuccess;
                     gymLocationStatus.style.color = '#10b981';
                     
                     const gyms = getGymsByLocation(lat, lng);
+                    console.log('找到健身房:', gyms.length);
                     
                     gymList.innerHTML = gyms.map(gym => `
                         <div class="recommendation-card">
@@ -1748,6 +1777,7 @@
                     `).join('');
                 },
                 (error) => {
+                    console.error('地理位置错误:', error);
                     let errorMessage = translations[currentLanguage].gymLocationError;
                     
                     switch(error.code) {
@@ -1781,7 +1811,35 @@
                     maximumAge: 300000
                 }
             );
-        });
+        }
+
+        // 绑定按钮事件（只绑定一次，避免重复）
+        const locationBtn = document.getElementById('getLocationBtn');
+        const gymBtn = document.getElementById('getGymBtn');
+        
+        console.log('按钮元素检查：');
+        console.log('locationBtn:', locationBtn);
+        console.log('gymBtn:', gymBtn);
+        
+        if (locationBtn) {
+            console.log('绑定餐厅位置按钮事件');
+            // 移除可能存在的旧事件监听器（通过克隆和替换元素）
+            const newLocationBtn = locationBtn.cloneNode(true);
+            locationBtn.parentNode.replaceChild(newLocationBtn, locationBtn);
+            newLocationBtn.addEventListener('click', handleRestaurantLocation);
+        } else {
+            console.error('找不到 getLocationBtn 元素');
+        }
+        
+        if (gymBtn) {
+            console.log('绑定健身房位置按钮事件');
+            // 移除可能存在的旧事件监听器（通过克隆和替换元素）
+            const newGymBtn = gymBtn.cloneNode(true);
+            gymBtn.parentNode.replaceChild(newGymBtn, gymBtn);
+            newGymBtn.addEventListener('click', handleGymLocation);
+        } else {
+            console.error('找不到 getGymBtn 元素');
+        }
     </script>
 </body>
 </html>
