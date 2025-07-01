@@ -574,6 +574,19 @@
                 proteinBtn: '蛋白質補充',
                 jointBtn: '關節健康',
                 immunityBtn: '免疫力提升',
+                // 推荐卡片标签
+                typeLabel: '類型：',
+                ratingLabel: '評分：',
+                addressLabel: '地址：',
+                reasonLabel: '推薦理由：',
+                featureLabel: '特色：',
+                brandLabel: '品牌：',
+                priceLabel: '價格：',
+                effectLabel: '功效：',
+                // 输入提示和错误消息
+                enterLocationPrompt: '請輸入您的位置',
+                noRestaurantRecommendations: '暫無該地區的餐廳推薦，請嘗試其他城市如：香港、台北、上海',
+                noGymRecommendationsArea: '暫無該地區的健身房推薦，請嘗試其他城市如：香港、台北、上海',
                 // 游戏结束
                 gameOverTitle: '遊戲結束！',
                 finalScoreText: '您的最終得分：',
@@ -619,7 +632,10 @@
                 ],
                 restartGameBtn: '重新开始',
                 cameraAccessError: '无法访问摄像头，请检查权限设置。',
-                invalidInputError: '请填写有效的年龄、体重和身高！'
+                invalidInputError: '请填写有效的年龄、体重和身高！',
+                enterLocationPrompt: '请输入您的位置',
+                noRestaurantRecommendations: '暂无该地区的餐厅推荐，请尝试其他城市如：香港、台北、上海',
+                noGymRecommendationsArea: '暂无该地区的健身房推荐，请尝试其他城市如：香港、台北、上海'
             },
             'zh-CN': {
                 appTitle: '平衡感調節小遊戲',
@@ -680,6 +696,19 @@
                 proteinBtn: '蛋白質補充',
                 jointBtn: '關節健康',
                 immunityBtn: '免疫力提升',
+                // 推荐卡片标签
+                typeLabel: '类型：',
+                ratingLabel: '评分：',
+                addressLabel: '地址：',
+                reasonLabel: '推荐理由：',
+                featureLabel: '特色：',
+                brandLabel: '品牌：',
+                priceLabel: '价格：',
+                effectLabel: '功效：',
+                // 输入提示和错误消息
+                enterLocationPrompt: '请输入您的位置',
+                noRestaurantRecommendations: '暂无该地区的餐厅推荐，请尝试其他城市如：香港、台北、上海',
+                noGymRecommendationsArea: '暂无该地区的健身房推荐，请尝试其他城市如：香港、台北、上海',
                 // 游戏结束
                 gameOverTitle: '遊戲結束！',
                 finalScoreText: '您的最終得分：',
@@ -725,7 +754,10 @@
                 ],
                 restartGameBtn: '重新开始',
                 cameraAccessError: '无法访问摄像头，请检查权限设置。',
-                invalidInputError: '请填写有效的年龄、体重和身高！'
+                invalidInputError: '请填写有效的年龄、体重和身高！',
+                enterLocationPrompt: '请输入您的位置',
+                noRestaurantRecommendations: '暂无该地区的餐厅推荐，请尝试其他城市如：香港、台北、上海',
+                noGymRecommendationsArea: '暂无该地区的健身房推荐，请尝试其他城市如：香港、台北、上海'
             },
             'en': {
                 appTitle: 'Balance Training Mini-Games',
@@ -786,6 +818,15 @@
                 proteinBtn: 'Protein Supplement',
                 jointBtn: 'Joint Health',
                 immunityBtn: 'Immunity Boost',
+                // 推荐卡片标签
+                typeLabel: 'Type:',
+                ratingLabel: 'Rating:',
+                addressLabel: 'Address:',
+                reasonLabel: 'Reason:',
+                featureLabel: 'Features:',
+                brandLabel: 'Brand:',
+                priceLabel: 'Price:',
+                effectLabel: 'Effect:',
                 // Game over
                 gameOverTitle: 'Game Over!',
                 finalScoreText: 'Your Final Score:',
@@ -831,7 +872,10 @@
                 ],
                 restartGameBtn: 'Restart Game',
                 cameraAccessError: 'Unable to access camera, please check permissions.',
-                invalidInputError: 'Please enter valid age, weight, and height!'
+                invalidInputError: 'Please enter valid age, weight, and height!',
+                enterLocationPrompt: 'Please enter your location',
+                noRestaurantRecommendations: 'No restaurant recommendations for this area. Try other cities like: Hong Kong, Taipei, Shanghai',
+                noGymRecommendationsArea: 'No gym recommendations for this area. Try other cities like: Hong Kong, Taipei, Shanghai'
             }
         };
 
@@ -913,6 +957,8 @@
         document.getElementById('languageSelect').addEventListener('change', (event) => {
             currentLanguage = event.target.value;
             updateLanguage();
+            // 刷新当前显示的推荐内容
+            refreshCurrentRecommendations();
         });
 
         // --- 页面导航逻辑 ---
@@ -1396,30 +1442,8 @@
         };
 
         document.getElementById('getLocationBtn').addEventListener('click', () => {
-            const location = document.getElementById('locationInput').value.trim();
-            const restaurantList = document.getElementById('restaurantList');
-            
-            if (!location) {
-                alert('請輸入您的位置');
-                return;
-            }
-            
-            const restaurants = restaurantData[location] || [];
-            
-            if (restaurants.length === 0) {
-                restaurantList.innerHTML = '<p class="text-center text-gray-500 col-span-full">暫無該地區的餐廳推薦，請嘗試其他城市如：香港、台北、上海</p>';
-                return;
-            }
-            
-            restaurantList.innerHTML = restaurants.map(restaurant => `
-                <div class="recommendation-card">
-                    <h4>${restaurant.name}</h4>
-                    <p><strong>類型：</strong>${restaurant.type}</p>
-                    <p class="rating"><strong>評分：</strong>${restaurant.rating}</p>
-                    <p class="address"><strong>地址：</strong>${restaurant.address}</p>
-                    <p><strong>推薦理由：</strong>${restaurant.description}</p>
-                </div>
-            `).join('');
+            // 直接调用地理位置功能获取餐厅推荐
+            handleRestaurantLocation();
         });
 
         // --- 健身房推荐功能 ---
@@ -1445,31 +1469,8 @@
         };
 
         document.getElementById('getGymBtn').addEventListener('click', () => {
-            const location = document.getElementById('gymLocationInput').value.trim();
-            const gymList = document.getElementById('gymList');
-            
-            if (!location) {
-                // 如果没有输入，则调用地理位置功能
-                handleGymLocation();
-                return;
-            }
-            
-            const gyms = gymData[location] || [];
-            
-            if (gyms.length === 0) {
-                gymList.innerHTML = '<p class="text-center text-gray-500 col-span-full">暫無該地區的健身房推薦，請嘗試其他城市如：香港、台北、上海</p>';
-                return;
-            }
-            
-            gymList.innerHTML = gyms.map(gym => `
-                <div class="recommendation-card">
-                    <h4>${gym.name}</h4>
-                    <p><strong>類型：</strong>${gym.type}</p>
-                    <p class="rating"><strong>評分：</strong>${gym.rating}</p>
-                    <p class="address"><strong>地址：</strong>${gym.address}</p>
-                    <p><strong>特色：</strong>${gym.description}</p>
-                </div>
-            `).join('');
+            // 直接调用地理位置功能获取健身房推荐
+            handleGymLocation();
         });
 
         // --- 保健品推荐功能 ---
@@ -1516,10 +1517,10 @@
                 supplementList.innerHTML = supplements.map(supplement => `
                     <div class="recommendation-card">
                         <h4>${supplement.name}</h4>
-                        <p><strong>品牌：</strong>${supplement.brand}</p>
-                        <p class="rating"><strong>評分：</strong>${supplement.rating}</p>
-                        <p><strong>價格：</strong>${supplement.price}</p>
-                        <p><strong>功效：</strong>${supplement.description}</p>
+                        <p><strong>${translations[currentLanguage].brandLabel}</strong>${supplement.brand}</p>
+                        <p class="rating"><strong>${translations[currentLanguage].ratingLabel}</strong>${supplement.rating}</p>
+                        <p><strong>${translations[currentLanguage].priceLabel}</strong>${supplement.price}</p>
+                        <p><strong>${translations[currentLanguage].effectLabel}</strong>${supplement.description}</p>
                     </div>
                 `).join('');
             });
@@ -1683,10 +1684,10 @@
                     restaurantList.innerHTML = restaurants.map(restaurant => `
                         <div class="recommendation-card">
                             <h4>${restaurant.name}</h4>
-                            <p><strong>類型：</strong>${restaurant.type}</p>
-                            <p class="rating"><strong>評分：</strong>${restaurant.rating}</p>
-                            <p class="address"><strong>地址：</strong>${restaurant.address}</p>
-                            <p><strong>推薦理由：</strong>${restaurant.description}</p>
+                            <p><strong>${translations[currentLanguage].typeLabel}</strong>${restaurant.type}</p>
+                            <p class="rating"><strong>${translations[currentLanguage].ratingLabel}</strong>${restaurant.rating}</p>
+                            <p class="address"><strong>${translations[currentLanguage].addressLabel}</strong>${restaurant.address}</p>
+                            <p><strong>${translations[currentLanguage].reasonLabel}</strong>${restaurant.description}</p>
                         </div>
                     `).join('');
                 },
@@ -1712,10 +1713,10 @@
                     restaurantList.innerHTML = locationBasedRestaurantData.general.map(restaurant => `
                         <div class="recommendation-card">
                             <h4>${restaurant.name}</h4>
-                            <p><strong>類型：</strong>${restaurant.type}</p>
-                            <p class="rating"><strong>評分：</strong>${restaurant.rating}</p>
-                            <p class="address"><strong>地址：</strong>${restaurant.address}</p>
-                            <p><strong>推薦理由：</strong>${restaurant.description}</p>
+                            <p><strong>${translations[currentLanguage].typeLabel}</strong>${restaurant.type}</p>
+                            <p class="rating"><strong>${translations[currentLanguage].ratingLabel}</strong>${restaurant.rating}</p>
+                            <p class="address"><strong>${translations[currentLanguage].addressLabel}</strong>${restaurant.address}</p>
+                            <p><strong>${translations[currentLanguage].reasonLabel}</strong>${restaurant.description}</p>
                         </div>
                     `).join('');
                 },
@@ -1769,10 +1770,10 @@
                     gymList.innerHTML = gyms.map(gym => `
                         <div class="recommendation-card">
                             <h4>${gym.name}</h4>
-                            <p><strong>類型：</strong>${gym.type}</p>
-                            <p class="rating"><strong>評分：</strong>${gym.rating}</p>
-                            <p class="address"><strong>地址：</strong>${gym.address}</p>
-                            <p><strong>特色：</strong>${gym.description}</p>
+                            <p><strong>${translations[currentLanguage].typeLabel}</strong>${gym.type}</p>
+                            <p class="rating"><strong>${translations[currentLanguage].ratingLabel}</strong>${gym.rating}</p>
+                            <p class="address"><strong>${translations[currentLanguage].addressLabel}</strong>${gym.address}</p>
+                            <p><strong>${translations[currentLanguage].featureLabel}</strong>${gym.description}</p>
                         </div>
                     `).join('');
                 },
@@ -1798,10 +1799,10 @@
                     gymList.innerHTML = locationBasedGymData.general.map(gym => `
                         <div class="recommendation-card">
                             <h4>${gym.name}</h4>
-                            <p><strong>類型：</strong>${gym.type}</p>
-                            <p class="rating"><strong>評分：</strong>${gym.rating}</p>
-                            <p class="address"><strong>地址：</strong>${gym.address}</p>
-                            <p><strong>特色：</strong>${gym.description}</p>
+                            <p><strong>${translations[currentLanguage].typeLabel}</strong>${gym.type}</p>
+                            <p class="rating"><strong>${translations[currentLanguage].ratingLabel}</strong>${gym.rating}</p>
+                            <p class="address"><strong>${translations[currentLanguage].addressLabel}</strong>${gym.address}</p>
+                            <p><strong>${translations[currentLanguage].featureLabel}</strong>${gym.description}</p>
                         </div>
                     `).join('');
                 },
@@ -1839,6 +1840,83 @@
             newGymBtn.addEventListener('click', handleGymLocation);
         } else {
             console.error('找不到 getGymBtn 元素');
+        }
+
+        // 刷新当前显示的推荐内容
+        function refreshCurrentRecommendations() {
+            // 刷新餐厅推荐（如果有内容显示）
+            const restaurantList = document.getElementById('restaurantList');
+            if (restaurantList && restaurantList.innerHTML.trim() && !restaurantList.innerHTML.includes('text-center text-gray-500')) {
+                // 重新生成已显示的餐厅推荐内容标签
+                const restaurantCards = restaurantList.querySelectorAll('.recommendation-card');
+                restaurantCards.forEach(card => {
+                    const paragraphs = card.querySelectorAll('p');
+                    paragraphs.forEach(p => {
+                        const strongTag = p.querySelector('strong');
+                        if (strongTag) {
+                            const text = strongTag.textContent;
+                            if (text.includes('类型') || text.includes('Type') || text.includes('類型')) {
+                                strongTag.textContent = translations[currentLanguage].typeLabel;
+                            } else if (text.includes('评分') || text.includes('Rating') || text.includes('評分')) {
+                                strongTag.textContent = translations[currentLanguage].ratingLabel;
+                            } else if (text.includes('地址') || text.includes('Address') || text.includes('地址')) {
+                                strongTag.textContent = translations[currentLanguage].addressLabel;
+                            } else if (text.includes('推荐理由') || text.includes('Reason') || text.includes('推薦理由')) {
+                                strongTag.textContent = translations[currentLanguage].reasonLabel;
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // 刷新健身房推荐（如果有内容显示）
+            const gymList = document.getElementById('gymList');
+            if (gymList && gymList.innerHTML.trim() && !gymList.innerHTML.includes('text-center text-gray-500')) {
+                // 重新生成已显示的健身房推荐内容标签
+                const gymCards = gymList.querySelectorAll('.recommendation-card');
+                gymCards.forEach(card => {
+                    const paragraphs = card.querySelectorAll('p');
+                    paragraphs.forEach(p => {
+                        const strongTag = p.querySelector('strong');
+                        if (strongTag) {
+                            const text = strongTag.textContent;
+                            if (text.includes('类型') || text.includes('Type') || text.includes('類型')) {
+                                strongTag.textContent = translations[currentLanguage].typeLabel;
+                            } else if (text.includes('评分') || text.includes('Rating') || text.includes('評分')) {
+                                strongTag.textContent = translations[currentLanguage].ratingLabel;
+                            } else if (text.includes('地址') || text.includes('Address') || text.includes('地址')) {
+                                strongTag.textContent = translations[currentLanguage].addressLabel;
+                            } else if (text.includes('特色') || text.includes('Feature') || text.includes('特色')) {
+                                strongTag.textContent = translations[currentLanguage].featureLabel;
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // 刷新保健品推荐（如果有内容显示）
+            const supplementList = document.getElementById('supplementList');
+            if (supplementList && supplementList.innerHTML.trim()) {
+                const supplementCards = supplementList.querySelectorAll('.recommendation-card');
+                supplementCards.forEach(card => {
+                    const paragraphs = card.querySelectorAll('p');
+                    paragraphs.forEach(p => {
+                        const strongTag = p.querySelector('strong');
+                        if (strongTag) {
+                            const text = strongTag.textContent;
+                            if (text.includes('品牌') || text.includes('Brand') || text.includes('品牌')) {
+                                strongTag.textContent = translations[currentLanguage].brandLabel;
+                            } else if (text.includes('评分') || text.includes('Rating') || text.includes('評分')) {
+                                strongTag.textContent = translations[currentLanguage].ratingLabel;
+                            } else if (text.includes('价格') || text.includes('Price') || text.includes('價格')) {
+                                strongTag.textContent = translations[currentLanguage].priceLabel;
+                            } else if (text.includes('功效') || text.includes('Effect') || text.includes('功效')) {
+                                strongTag.textContent = translations[currentLanguage].effectLabel;
+                            }
+                        }
+                    });
+                });
+            }
         }
     </script>
 </body>
